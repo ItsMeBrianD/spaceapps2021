@@ -16,8 +16,8 @@
 	{#if $store.loading}
 		<Spinner/>
 	{:else if !$store.loading}
-		<Map let:map>
-			<MapPointManager {map}/>
+		<Map let:map let:tangram>
+			<MapPointManager {map} {tangram}/>
 		</Map>
 	{/if}
 	<Sidebar slot="aside"/>
