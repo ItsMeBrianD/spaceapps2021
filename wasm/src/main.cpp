@@ -44,6 +44,7 @@ std::vector<std::string> bufferToTLEs(uintptr_t address, int length) {
       const char* cstr = tmp.c_str();
 
       out.push_back(cstr);
+      ss.str(std::string()); // clear stringstreams
       newLineCount = 0;
     }
   }
