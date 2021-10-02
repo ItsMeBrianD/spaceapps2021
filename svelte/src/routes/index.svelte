@@ -1,13 +1,5 @@
 <script lang="ts">
-	import WasmProvider from '$lib/components/abstract/WasmProvider.svelte';
+	import Map from '$lib/components/atoms/Map.svelte';
 </script>
 
-<WasmProvider let:wasm>
-	{#if wasm}
-		<pre>
-            {wasm.hello()}
-        </pre>
-	{:else}
-		Loading...
-	{/if}
-</WasmProvider>
+<Map />
