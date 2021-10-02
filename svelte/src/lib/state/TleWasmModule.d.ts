@@ -7,4 +7,6 @@ export interface TleWasmModule {
     asm: TleWasmModuleASM;
     printBuffer(buffer: number, length: number);
     hello(): string;
+    bufferToTLEs(tlesAddress: number, length: number): any;
+    getPositions(tlesAddress: number, length: number): any;
 }
