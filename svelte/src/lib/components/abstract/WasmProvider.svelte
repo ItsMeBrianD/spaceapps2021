@@ -2,7 +2,7 @@
 	import {onMount} from "svelte";
 	import ContextProvider from "./ContextProvider.svelte";
 
-	let value = false;
+	let value: any = false;
 	let loading;
 
 	onMount(() => {

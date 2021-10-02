@@ -1,9 +1,9 @@
 <script lang="ts" context="module">
     export interface SelectOption {
-    label: string,
-    value: string,
-    group?: string
-    };
+        label: string;
+        value: string;
+        group?: string;
+    }
 
 </script>
 

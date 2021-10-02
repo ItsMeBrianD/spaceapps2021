@@ -1,47 +1,93 @@
-<script lang="ts" context="module">
-	export const ssr = false;
-
-</script>
-
 <script lang="ts">
-	import {onMount} from "svelte";
-	import {map} from "leaflet";
-	import type {Map} from "leaflet";
-	import {leafletLayer} from "tangram";
-	console.log(leafletLayer);
-
+	import {onDestroy, onMount} from "svelte";
+	import {
+Map, TileLayer, ParticleLayer, VectorLayer, Circle, Marker, Point
+} from "maptalks";
 	let el: HTMLElement | undefined;
-	let mapInstance: Map | undefined;
-	let tangramInstance;
-
+	let map;
 	onMount(() => {
-	    mapInstance = map(el, {
-	        // center: [0, 0],
-	        zoom: 3,
-	        minZoom: 3,
-	        maxBounds: [ [-Infinity, -Infinity], [Infinity, Infinity] ],
+	    map = new Map(el, {
+     		center: [0, 0],
+			 draggable: false,
+			 dragPan: false,
+			 dragRotate: false,
+			 dragPitch: false,
+			 minZoom: 2.5,
+			 maxExtent: [0, 0, 180, 180],
+			 scrollWheelZoom: false,
+			 touchZoom: false,
+			 doubleClickZoom: false,
+     		zoom: 2,
+     		baseLayer: new TileLayer("base", {
+       			"urlTemplate" : "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+       			"subdomains"  : ["a", 'b', 'c', 'd'],
+       			"attribution"  : "&copy; <a href=\"http://www.osm.org/copyright\">OSM</a> contributors, "+
+       			"&copy; <a href=\"https://carto.com/attributions\">CARTO</a>"
+     		}),
+			 layers : [
+         		 new VectorLayer('v')
+        	]
 	    });
-	    tangramInstance = leafletLayer({scene: "tangram.yaml"});
-	    mapInstance.addLayer(tangramInstance);
-
 		
-	    mapInstance.setView([48, -3], 2.5);
+	    window.map = map;
+	    const particles = new ParticleLayer("MYPARTICLELAYER");
+		const center = map.getCenter();
+		console.log(center);
+
+	    particles.getParticles = function(t) {
+	        return [
+	            {
+					point: new Point({
+		                x: Math.sin(t) * 10,
+		                y: 5,
+	    	        }),
+	        	    r: 40,
+	            	color: "rgb(0,255,0)"
+				},
+				{
+					point: new Point({
+		                y: Math.cos(t) * 10,
+		                x: 5,
+	    	        }),
+	        	    r: 40,
+	            	color: "rgb(255,0,0)"
+				},
+	        ];
+	    };
+	    map.addLayer(particles);
+
+		new Marker(center, {
+        symbol : {
+          markerType : 'cross',
+          markerWidth : 10,
+          markerHeight : 10,
+          markerLineWidth : 2
+        }
+      })
+      .addTo(map.getLayer('v'));
+
+      new Circle(center, 1000, {
+        symbol : {
+          lineColor : '#fff',
+          lineWidth : 6,
+          lineOpacity : 0.2,
+          polygonOpacity : 0
+        }
+      })
+      .addTo(map.getLayer('v'));
+		
 	});
+	onDestroy(() => {
+	    map.remove();
+	    window.map = undefined;
+	});
+
 </script>
 
-<div class="map" bind:this={el} />
-
-<slot map={mapInstance} tangram={tangramInstance}/>
+<div bind:this={el}/>
 
 <style lang="postcss">
-	.map {
-		@apply h-full w-full text-primary-500;
-	}
-	.map :global(.leaflet-control-container) {
-		@apply hidden;
-	}
-	.map :global(img) {
-		@apply inline absolute;
-		will-change: opacity;
+	div {
+		@apply h-full w-full;
 	}
 </style>

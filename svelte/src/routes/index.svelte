@@ -6,7 +6,6 @@
 	import DefaultLayout from "$lib/components/layouts/DefaultLayout.svelte";
 	import Sidebar from "$lib/components/page-components/index/Sidebar.svelte";
 	import Spinner from "$lib/components/atoms/Spinner.svelte";
-	import MapPointManager from "$lib/components/abstract/MapPointManager.svelte";
 	
 	const store: TleStore = new TleStore();
 	setContext(ContextKeys.WasmStore, store);
@@ -16,8 +15,7 @@
 	{#if $store.loading}
 		<Spinner/>
 	{:else if !$store.loading}
-		<Map let:map let:tangram>
-			<MapPointManager {map} {tangram}/>
+		<Map>
 		</Map>
 	{/if}
 	<Sidebar slot="aside"/>
