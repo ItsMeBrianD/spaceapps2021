@@ -2,7 +2,6 @@
 	import { tileLayer } from 'leaflet';
 
 	export const ssr = false;
-	console.log('Hello There');
 
 	const terrain = tileLayer(
 		'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}{r}.{ext}',

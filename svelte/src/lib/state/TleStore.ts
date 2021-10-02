@@ -7,7 +7,12 @@ interface TleLoadingState {
     loading: true;
 }
 
-export type TleStoreState = TleLoadingState;
+interface TleLoadedState {
+    loading: false;
+    module: TleWasmModule;
+}
+
+export type TleStoreState = TleLoadingState | TleLoadedState;
 
 export class TleStore implements Readable<TleStoreState> {
     private state: TleStoreState = {loading: true};
@@ -21,12 +26,16 @@ export class TleStore implements Readable<TleStoreState> {
             const wasmMod = await import("$lib/wasm/wasm");
             this.wasmMod = await new Promise(res => {
                 const moduleRef = {
-                    onRuntimeInitialized: () => { res(moduleRef) },
+                    // as unknown as TleWasmModule because emscrpiten outputs javascript that looks like it's from 2002
+                    onRuntimeInitialized: () => { res(moduleRef as unknown as TleWasmModule) },
                 };
                 wasmMod.default(moduleRef);
             });
+            this.updateState({
+                loading: false,
+                module: this.wasmMod,
+            });
         })().catch(console.error);
-
     }
 
     subscribe(run: Subscriber<TleStoreState>): Unsubscriber {
@@ -34,4 +43,9 @@ export class TleStore implements Readable<TleStoreState> {
         this.subs.add(run);
         return () => this.subs.delete(run);
     }
+
+    private updateState = (newState: TleStoreState): void => {
+        this.state = newState;
+        this.subs.forEach(sub => { sub(newState) });
+    };
 }
