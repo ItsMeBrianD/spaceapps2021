@@ -18,11 +18,10 @@
     const start = new Date();
     let retVector = wasm.getPositions(dataPtr, tleArray.length);
     const end = new Date();
+    const elapsed = end.getTime() - start.getTime();
 
-    console.log("elapsed", end.getTime() - start.getTime());
-
-    console.log(retVector);
-    console.log(retVector.size());
+    
+    console.log(`took ${elapsed} ms to calculate ${retVector.size()} positions`);
 
     // for (let i = 0; i < retVector.size(); i++) {
     //   let info = retVector.get(i);
