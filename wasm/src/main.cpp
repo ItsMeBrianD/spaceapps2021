@@ -1,10 +1,102 @@
 #include <iostream>
 #include <emscripten/bind.h>
 #include <ctime>
+#include <sstream>
 
 #include "libastro/astro.h"
 #include "libastro/preferences.h"
+
 using namespace emscripten;
+
+std::vector<std::string> splitString(std::string s, char delim) {
+  std::vector<std::string> out;
+
+  size_t pos = 0;
+  std::string token;
+  while ((pos = s.find(delim)) != std::string::npos) {
+      token = s.substr(0, pos);
+      out.push_back(token);
+      s.erase(0, pos + 1);
+  }
+  return out;
+}
+
+/**
+ * Converts a buffer of characters at a given memory address to an array of TLE formatted orbital data.
+ */
+std::vector<std::string> bufferToTLEs(uintptr_t address, int length) {
+  const char *ptr = reinterpret_cast<char *>(address);
+
+  std::vector<std::string> out;
+  std::stringstream ss;
+  int newLineCount = 0;
+
+  for (int i = 0; i < length; i++) {
+    char c = ptr[i];
+    ss << c;
+
+    if (c == '\n') {
+      newLineCount++;
+    }
+
+    if (newLineCount == 3) {
+      const std::string& tmp = ss.str();   
+      const char* cstr = tmp.c_str();
+
+      out.push_back(cstr);
+      newLineCount = 0;
+    }
+  }
+
+  return out;
+}
+
+std::vector<std::vector<std::string>> getPositions(uintptr_t tlesAddress, int length) {
+  std::vector<std::string> tles = bufferToTLEs(tlesAddress, length);
+
+  std::vector<std::vector<std::string>> out;
+
+  time_t t = time(0);
+  struct tm * timeStruct = gmtime(&t);
+  int year = timeStruct->tm_year + 1900;
+  int month = timeStruct->tm_mon + 1;
+  float day = timeStruct->tm_mday + (timeStruct->tm_hour/24.0) + (timeStruct->tm_min/(60.0*24.0)) + (timeStruct->tm_sec/(60.0*60.0*24.0));
+
+  Now now, *np = &now;
+  memset(np, 0, sizeof(*np));
+	cal_mjd(month, day, year, &mjd);
+
+  // compute position of each object
+  for (int i = 0; i < tles.size(); i++) {
+    Obj obj, *op = &obj;
+    memset(op, 0, sizeof(*op));
+
+    std::string s = tles.at(i);
+    std::vector<std::string> split = splitString(s, '\n');
+    std::string line0 = split.at(0);
+    std::string line1 = split.at(1);
+    std::string line2 = split.at(2);
+
+    db_tle(&line0[0], &line1[0], &line2[0], op);
+    (void)obj_earthsat(np, op);
+
+    std::vector<std::string> info;
+    std::string id = line2.substr(2, 5);
+    info.push_back(id);
+    info.push_back(std::to_string(raddeg(obj.es.ess_sublat)));
+    info.push_back(std::to_string(raddeg(obj.es.ess_sublng)));
+
+    out.push_back(info);
+  }
+
+  return out;
+}
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
 
 std::string hello() {
   return "hello sprocket spaceapps";
@@ -41,7 +133,6 @@ reportPosition(Now *np, Obj *op)
 
 float tleToObj()//char *l1, char *l2)//char *arr[])
 {
-
   time_t t = time(0);
   struct tm * timeStruct = gmtime(&t);
   int year = timeStruct->tm_year + 1900;
@@ -91,8 +182,6 @@ float tleToObj()//char *l1, char *l2)//char *arr[])
 
 void printBuffer(uintptr_t pr, int length){
   const char *ptr = reinterpret_cast<char *>(pr);
-  printf("Hello? \n");
-  //std::cout << "pr" << ptr << " length" << length << std::endl;
   for (int i = 0; i < length; i++)
   {
     std::cout << ptr[i];
@@ -106,4 +195,10 @@ EMSCRIPTEN_BINDINGS(my_module) {
   function("hello", &hello);
   function("tleToObj", &tleToObj, allow_raw_pointers());
   function("printBuffer", &printBuffer, allow_raw_pointers());
+  function("bufferToTLEs", &bufferToTLEs);
+  function("getPositions", &getPositions);
+
+  register_vector<std::string>("VectorString");
+  register_vector<std::vector<std::string>>("2DVectorString");
+  register_vector<int>("VectorInt");
 }
