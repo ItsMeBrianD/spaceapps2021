@@ -3,7 +3,8 @@ export interface TleWasmModuleASM {
 }
 
 export interface TleWasmModule {
-    tleToObj(): number;
+    tleToObj(l0: string, l1: string): number;
     asm: TleWasmModuleASM;
+    printBuffer(buffer: number, length: number);
     hello(): string;
 }

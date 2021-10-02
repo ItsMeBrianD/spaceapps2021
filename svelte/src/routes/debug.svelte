@@ -1,6 +1,10 @@
+<script context="module">
+	export const ssr = false;
+</script>
 <script lang="ts">
 	import WasmProvider from '$lib/components/abstract/WasmProvider.svelte';
 	import Map from '$lib/components/atoms/Map.svelte';
+	import WasmDebug from '$lib/components/atoms/WasmDebug.svelte';
 	import { setContext } from 'svelte';
 	import { TleStore } from '../lib/state/TleStore';
 	import { ContextKeys } from '../lib/utils/constants';
@@ -12,18 +16,15 @@
 </script>
 <WasmProvider let:wasm>
 	{#if wasm}
-		<pre>
-			{wasm.hello()}
-			{wasm.tleToObj()}
-		</pre>
+		<WasmDebug/>
 		<!-- {@debug wasm}
 		{@debug wasm} -->
 	{/if}
-	{#if $store.loading}
+	<!-- {#if $store.loading}
 		Loading...
 	{:else if !$store.loading}
 		<Map />
-	{/if}
+	{/if} -->
 </WasmProvider>
 
 

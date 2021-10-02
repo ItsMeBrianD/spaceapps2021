@@ -9,38 +9,37 @@ using namespace emscripten;
 std::string hello() {
   return "hello sprocket spaceapps";
 }
-
 static void
 reportPosition(Now *np, Obj *op)
 {
-    int mon, year;
-    double day;
-    char sexa[32];
+  int mon, year;
+  double day;
+  char sexa[32];
 
-    printf("Circumstances:\n");
-    mjd_cal(mjd, &mon, &day, &year);
-    printf("UTC:       %d/%g/%d\n", mon, day, year);
-    fs_sexa(sexa, raddeg(lat), 3, 3600);
-    printf("Latitude:  %s D:M:S +N\n", sexa);
-    fs_sexa(sexa, raddeg(lng), 3, 3600);
-    printf("Longitude: %s D:M:S +E\n", sexa);
-    printf("\n");
+  printf("Circumstances:\n");
+  mjd_cal(mjd, &mon, &day, &year);
+  printf("UTC:       %d/%g/%d\n", mon, day, year);
+  fs_sexa(sexa, raddeg(lat), 3, 3600);
+  printf("Latitude:  %s D:M:S +N\n", sexa);
+  fs_sexa(sexa, raddeg(lng), 3, 3600);
+  printf("Longitude: %s D:M:S +E\n", sexa);
+  printf("\n");
 
-    printf("%s:\n", op->o_name);
-    fs_sexa(sexa, radhr(op->s_ra), 3, 3600);
-    printf("RA:        %s H:M:S\n", sexa);
-    fs_sexa(sexa, raddeg(op->s_dec), 3, 3600);
-    printf("Dec:       %s D:M:S\n", sexa);
-    fs_sexa(sexa, raddeg(op->s_alt), 3, 3600);
-    printf("Altitude:  %s D:M:S\n", sexa);
-    fs_sexa(sexa, raddeg(op->s_az), 3, 3600);
-    printf("Azimuth:   %s D:M:S\n", sexa);
-    printf("\n");
+  printf("%s:\n", op->o_name);
+  fs_sexa(sexa, radhr(op->s_ra), 3, 3600);
+  printf("RA:        %s H:M:S\n", sexa);
+  fs_sexa(sexa, raddeg(op->s_dec), 3, 3600);
+  printf("Dec:       %s D:M:S\n", sexa);
+  fs_sexa(sexa, raddeg(op->s_alt), 3, 3600);
+  printf("Altitude:  %s D:M:S\n", sexa);
+  fs_sexa(sexa, raddeg(op->s_az), 3, 3600);
+  printf("Azimuth:   %s D:M:S\n", sexa);
+  printf("\n");
 
-    printf("\n");
+  printf("\n");
 }
 
-float tleToObj()//char *arr[])
+float tleToObj()//char *l1, char *l2)//char *arr[])
 {
 
   time_t t = time(0);
@@ -90,9 +89,20 @@ float tleToObj()//char *arr[])
   printf("%f\n", raddeg(obj.es.ess_sublng));
 }
 
+void printBuffer(char *pr, int length){
+  printf("Hello? \n");
+  std::cout << "pr" << pr << " length" << length << std::endl;
+  for (int i = 0; i < length; i++)
+  {
+    std::cout << (pr + i);
+  }
+  std::cout << std::endl;
+}
+
 // Expose functions to the outside world
 EMSCRIPTEN_BINDINGS(my_module) {
 //function(function_javascript_name, function_reference)
   function("hello", &hello);
-  function("tleToObj", &tleToObj);
+  function("tleToObj", &tleToObj, allow_raw_pointers());
+  function("printBuffer", &printBuffer, allow_raw_pointers());
 }
