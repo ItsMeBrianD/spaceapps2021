@@ -23,6 +23,7 @@
 
 	let el: HTMLElement | undefined;
 	let mapInstance: Map | undefined;
+
 	onMount(() => {
 	    mapInstance = map(el, {
 	        // center: [0, 0],
@@ -33,16 +34,17 @@
 	    terrain.addTo(mapInstance);
 		
 		mapInstance.setView([48, -3], 2.5)
-	    console.log(mapInstance);
 		mapInstance.on('zoom', console.log)
 	});
 </script>
 
 <div class="map" bind:this={el} />
 
+<slot map={mapInstance}/>
+
 <style lang="postcss">
 	.map {
-		@apply h-full w-full;
+		@apply h-full w-full text-primary-500;
 	}
 	.map :global(.leaflet-control-container) {
 		@apply hidden;

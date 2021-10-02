@@ -5,7 +5,9 @@
 	import {ContextKeys} from "$lib/utils/constants";
 	import DefaultLayout from "$lib/components/layouts/DefaultLayout.svelte";
 	import Sidebar from "$lib/components/page-components/index/Sidebar.svelte";
-import Spinner from "$lib/components/atoms/Spinner.svelte";
+	import Spinner from "$lib/components/atoms/Spinner.svelte";
+	import MapPointManager from "$lib/components/abstract/MapPointManager.svelte";
+	
 	const store: TleStore = new TleStore();
 	setContext(ContextKeys.WasmStore, store);
 </script>
@@ -14,7 +16,9 @@ import Spinner from "$lib/components/atoms/Spinner.svelte";
 	{#if $store.loading}
 		<Spinner/>
 	{:else if !$store.loading}
-		<Map />
+		<Map let:map>
+			<MapPointManager {map}/>
+		</Map>
 	{/if}
 	<Sidebar slot="aside"/>
 </DefaultLayout>
