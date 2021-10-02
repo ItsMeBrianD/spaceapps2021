@@ -1,19 +1,17 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import ContextProvider from './ContextProvider.svelte';
+	import {onMount} from "svelte";
+	import ContextProvider from "./ContextProvider.svelte";
 
 	let value = false;
 	let loading;
 
 	onMount(() => {
-		loading = import('$lib/wasm/wasm').then((wasmMod) =>
-			new Promise((res) => {
-				const moduleRef = {
-					onRuntimeInitialized: () => res(moduleRef)
-				};
-				wasmMod.default(moduleRef);
-			}).then((val) => (value = val))
-		);
+	    loading = import("$lib/wasm/wasm").then(async wasmMod =>        new Promise(res => {
+	        const moduleRef = {
+	            onRuntimeInitialized: () => { res(moduleRef) },
+	        };
+	        wasmMod.default(moduleRef);
+	    }).then(val => {value = val}));
 	});
 </script>
 
