@@ -10,23 +10,21 @@
 2 25544  51.6451 172.0044 0004138  50.9000 316.9051 15.48905523305232`;
 
 
+  let enc = new TextEncoder();
+  let issTLEArray = enc.encode(issTLE);
 
-  var myBuffer = [];
+  console.log(issTLEArray);
+  console.log(issTLEArray.length);
 
-  // var buffer = Buffer.from(issTLE, 'utf16le');
-  // for (var i = 0; i < buffer.length; i++) {
-  //     myBuffer.push(buffer[i]);
-  // }
-
-
-  // let nDataBytes = issTLE.length;
-  // // let dataPtr = wasm._malloc(nDataBytes);
-  // let dataHeap = new Uint8Array(wasm.HEAPU8.buffer, dataPtr, nDataBytes);
-  // dataHeap.set(myBuffer);
+  console.log(wasm);
+  let dataPtr = wasm._malloc(issTLEArray.length);
+  console.log(dataPtr);
+  let dataHeap = new Uint8Array(wasm.HEAPU8.buffer, dataPtr, issTLEArray.length);
+  dataHeap.set(issTLEArray);
 
 
   console.log(wasm);
-  wasm.printBuffer(0, 10)
+  wasm.printBuffer(dataPtr, issTLEArray.length)
   
   
   //wasm.tleToObj()

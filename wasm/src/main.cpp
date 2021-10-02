@@ -89,12 +89,13 @@ float tleToObj()//char *l1, char *l2)//char *arr[])
   printf("%f\n", raddeg(obj.es.ess_sublng));
 }
 
-void printBuffer(char *pr, int length){
+void printBuffer(uintptr_t pr, int length){
+  const char *ptr = reinterpret_cast<char *>(pr);
   printf("Hello? \n");
-  std::cout << "pr" << pr << " length" << length << std::endl;
+  //std::cout << "pr" << ptr << " length" << length << std::endl;
   for (int i = 0; i < length; i++)
   {
-    std::cout << (pr + i);
+    std::cout << ptr[i];
   }
   std::cout << std::endl;
 }
