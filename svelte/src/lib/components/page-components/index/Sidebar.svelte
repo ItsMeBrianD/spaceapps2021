@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { getContext } from "svelte";
+    import {getContext} from "svelte";
 
-    import type { TleWasmModule } from "$lib/state/TleWasmModule";
-    import { availableDatasets, ContextKeys } from "$lib/utils/constants";
+    import type {TleWasmModule} from "$lib/state/TleWasmModule";
+    import {availableDatasets, ContextKeys} from "$lib/utils/constants";
     import Select from "$lib/components/atoms/Select.svelte";
 
 
@@ -10,7 +10,7 @@
 
     async function handleSelectDataset(e) {
         const newDatasetLocation = e.target.value;
-        const newData = await fetch(newDatasetLocation).then(r => r.text());
+        const newData = await fetch(newDatasetLocation).then(async r => r.text());
         console.log(newData);
     }
 </script>

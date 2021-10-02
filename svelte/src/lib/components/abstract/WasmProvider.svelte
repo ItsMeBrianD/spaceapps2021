@@ -11,7 +11,7 @@
 	            onRuntimeInitialized: () => { res(moduleRef) },
 	        };
 	        wasmMod.default(moduleRef);
-	    }).then(val => {value = val}));
+	    }).then(val => { value = val }));
 	});
 </script>
 

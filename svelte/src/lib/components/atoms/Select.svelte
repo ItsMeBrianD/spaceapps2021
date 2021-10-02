@@ -1,8 +1,8 @@
 <script lang="ts" context="module">
-    export type SelectOption = {
-        label: string,
-        value: string,
-        group?: string
+    export interface SelectOption {
+    label: string,
+    value: string,
+    group?: string
     };
 
 </script>
@@ -13,21 +13,21 @@
     export let handleChange: (e: any) => Promise<void>;
 
     let groups: Record<string, SelectOption[]> = {};
-    $: groups = options.reduce<Record<string, SelectOption[]>>((acc,val) => {
+    $: groups = options.reduce<Record<string, SelectOption[]>>((acc, val) => {
         if (val.group) {
             if (!acc[val.group]) {
                 acc[val.group] = [];
             }
             acc[val.group].push(val);
         } else {
-            if(!acc["__"]) {
-                acc["__"] = [];
+            if (!acc.__) {
+                acc.__ = [];
             }
-            acc["__"].push(val);
+            acc.__.push(val);
         }
 
         return acc;
-    } , {});
+    }, {});
 </script>
 
 

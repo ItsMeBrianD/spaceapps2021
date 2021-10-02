@@ -34,6 +34,7 @@
 		"@types/leaflet": "^1.7.5",
 		"faker": "^5.5.3",
 		"leaflet": "^1.7.1",
-		"leaflet-realtime": "^2.2.0"
+		"leaflet-realtime": "^2.2.0",
+		"tangram": "^0.21.1"
 	}
 }
