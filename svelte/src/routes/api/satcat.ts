@@ -7,9 +7,7 @@ export const get = async ({query}: Request): Response => {
     
         const {data, error} = await supabase.from("SatCat").select("*")
             .eq("NORAD_CAT_ID", id);
-        
-        console.log(data, error);
-        
+                
         if (data.length === 0) {
             return {
                 status: 404,
