@@ -6,6 +6,8 @@ export const playing = writable<boolean>(false);
 
 export const currentTime = writable<number>(initialTime);
 
+export const selectedObject = writable<any>(null);
+
 export enum Increment {
     SLOWER = 0.333333333,
     SLOW = 0.5,
