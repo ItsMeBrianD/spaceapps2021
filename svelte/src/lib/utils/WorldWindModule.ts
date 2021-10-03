@@ -5,16 +5,20 @@ import type {TleStore} from "../state/TleStore";
 class WWModule {
     yeet: CallableFunction;
 
-    private unsubs: CallableFunction[] = [];
+    placemarks: Record<string, any> = {};
 
-    private placemarks: Record<string, any> = {};
+    get redraw() {
+        return this.worldWin.redraw.bind(this.worldWin);
+    }
+
+    private unsubs: CallableFunction[] = [];
     
     private ww: any;
 
     private worldWin: any;
 
-
     private store: TleStore;
+
 
     init = async (c: HTMLCanvasElement, s: TleStore): Promise<void> => {
         this.store = s;
@@ -28,45 +32,35 @@ class WWModule {
 
 
 
-
-
-
-
         // Drawing paths
         const pathPositions = [];
         const alt = 10000000;
         const numPoints = 10;
-        for (let i = 0; i < numPoints + 1; i++) {
-            const long = (360/numPoints)*i;
+        for (let i = 0;i < numPoints + 1;i++) {
+            const long = 360 / numPoints * i;
             pathPositions.push(new ww.Position(0, long, alt));
         }
 
-        var path = new ww.Path(pathPositions, null);
+        const path = new ww.Path(pathPositions, null);
         path.altitudeMode = ww.RELATIVE_TO_GROUND; // The path's altitude stays relative to the terrain's altitude.
         path.followTerrain = false;
 
-        var pathAttributes = new ww.ShapeAttributes(null);
+        const pathAttributes = new ww.ShapeAttributes(null);
         pathAttributes.outlineColor = ww.Color.BLUE;
         pathAttributes.interiorColor = new ww.Color(0, 1, 1, 0.5);
-        pathAttributes.drawVerticals = path.extrude; //Draw verticals only when extruding.
+        pathAttributes.drawVerticals = path.extrude; // Draw verticals only when extruding.
         path.attributes = pathAttributes;
 
         // Create and assign the path's highlight attributes.
-        var highlightAttributes = new ww.ShapeAttributes(pathAttributes);
+        const highlightAttributes = new ww.ShapeAttributes(pathAttributes);
         highlightAttributes.outlineColor = ww.Color.RED;
         highlightAttributes.interiorColor = new ww.Color(1, 1, 1, 0.5);
         path.highlightAttributes = highlightAttributes;
         
         // Add the path to a layer and the layer to the WorldWindow's layer list.
-        var pathsLayer = new ww.RenderableLayer();
+        const pathsLayer = new ww.RenderableLayer();
         pathsLayer.displayName = "Paths";
-        pathsLayer.addRenderable(path);        
-
-
-
-
-
-
+        pathsLayer.addRenderable(path);
 
         const layers = [
             // Imagery layers.
@@ -90,7 +84,7 @@ class WWModule {
         };
 
         let selected;
-        selectedObject.subscribe(x => selected = x);
+        selectedObject.subscribe(x => { selected = x });
 
         const posSub = s.positions.subscribe(allPositions => {
             allPositions.forEach(pos => {
@@ -131,7 +125,7 @@ class WWModule {
         const handleClick = recognizer => {
             // Obtain the event location.
             const x = recognizer.clientX,
-                y = recognizer.clientY;
+                  y = recognizer.clientY;
 
             // Perform the pick. Must first convert from window coordinates to canvas coordinates, which are
             // relative to the upper left corner of the canvas rather than the upper left corner of the page.
@@ -141,18 +135,20 @@ class WWModule {
             if (pickList.objects.length && !pickList.objects[0]?.isTerrain) {
                 const properties = pickList.objects[0].userObject.userProperties;
                 this.placemarks[properties.id].attributes.imageSource = "/images/pink.png";
-
+                this.placemarks[properties.id].label = "Loading...";
                 selectedObject.update(curr => {
                     if (curr) {
                         this.placemarks[curr.id].attributes.imageSource = "/images/yellow.png";
+                        this.placemarks[curr.id].label = undefined;
                     }
                     return properties;
                 });
                 this.worldWin.redraw();
             } else {
-                selectedObject.update((curr) => {
+                selectedObject.update(curr => {
                     if (!curr) return;
                     this.placemarks[curr.id].attributes.imageSource = "/images/yellow.png";
+                    this.placemarks[curr.id].label = undefined;
                     return null;
                 });
             }
@@ -164,13 +160,6 @@ class WWModule {
 
         // Listen for taps on mobile devices.
         const tapRecognizer = new ww.TapRecognizer(this.worldWin, handleClick);
-
-
-
-
-
-
-
 
 
 

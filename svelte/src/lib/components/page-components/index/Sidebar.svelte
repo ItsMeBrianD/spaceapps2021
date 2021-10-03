@@ -91,7 +91,7 @@
     </section>
 
     {#if $selectedObject}
-        <section transition:fly={{y:50}}>
+        <section transition:fly={{x:-50}}>
             <header><h2>Selected Object</h2></header>
             <ObjectInfo />
         </section>
