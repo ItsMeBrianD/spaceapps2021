@@ -1,5 +1,5 @@
 <script>
-  import { getDateRows, uuid, noop } from "./date-time.js";
+  import { getDateRows, noop, uuid } from "$lib/utils/date-time";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
@@ -30,30 +30,21 @@
   }));
 </script>
 
-<style>
+<style lang="postcss">
   .container {
-    margin-top: 8px;
-    padding: 6px;
-    width: 370px;
-    z-index: 4;
+    @apply mt-2 p-3 w-full z-10;
+  }
+  * {
+    @apply select-none;
   }
   .row {
-    display: flex;
-    margin: 2px 6px;
-    flex-wrap: wrap;
+    @apply flex my-1 mx-1 flex-wrap;
   }
-
   .cell {
-    display: inline-block;
-    width: 40px;
-    height: 20px;
-    text-align: center;
-    padding: 4px;
-    margin: 1px;
+    @apply inline-flex justify-center items-center w-10 h-5 text-center p-1;
   }
-
   .selected {
-    background: #84e791;
+    @apply bg-primary-500 text-gray-500;
   }
 
   .highlight {
@@ -61,20 +52,15 @@
   }
 
   .disabled {
-    background: #efefef;
-    cursor: not-allowed;
-    color: #bfbfbf;
+    @apply bg-gray-400 cursor-not-allowed text-red-600;
   }
 
   .highlight:hover {
-    background: rgb(238, 176, 60);
-    color: #fff;
-    cursor: pointer;
-    transform: scale(1.3);
+    @apply bg-primary-400 cursor-pointer scale-125 text-gray-500;
   }
 
   .selected.highlight:hover {
-    background: green;
+    @apply bg-primary-800;
   }
 </style>
 

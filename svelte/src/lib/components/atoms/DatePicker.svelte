@@ -1,6 +1,6 @@
 <script lang='ts'>
   import { createEventDispatcher } from "svelte";
-  import { getMonthName } from "./date-time.js";
+  import { getMonthName } from "$lib/utils/date-time";
   import Calendar from "./Calendar.svelte"
 
   const dispatch = createEventDispatcher();
@@ -46,35 +46,18 @@
     showDatePicker = false;
     dispatch("datechange", d.detail);
   };
+
+  let el: HTMLElement;
+  const handleBodyClick = (e: MouseEvent) => {
+    if(!el.contains(e.target)) {
+      showDatePicker = false;
+    }
+  }
 </script>
 
-<style>
-  .relative {
-    position: relative;
-  }
-  .box {
-    position: absolute;
-    top: 40px;
-    left: 0px;
-    border: 1px solid green;
-    display: inline-block;
-  }
+<svelte:body on:click={handleBodyClick}/>
 
-  .month-name {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin: 6px 0;
-  }
-
-  .center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-</style>
-
-<div class="relative">
+<div class="-relative" bind:this={el}>
   <input type="text" on:focus={onFocus} value={selected.toDateString()} />
   {#if showDatePicker}
     <div class="box">
@@ -96,3 +79,25 @@
     </div>
   {/if}
 </div>
+
+
+<style lang="postcss">
+  .-relative {
+    @apply relative;
+  }
+  input {
+    @apply bg-light-gray-500 text-primary-500 w-full py-1 px-2 my-2;
+  }
+  .box {
+    @apply absolute top-10 left-0 border-2 border-primary-500 inline-block;
+  }
+  .month-name {
+    @apply flex justify-around items-center my-2 mx-0;
+  }
+  .center {
+    @apply flex justify-center items-center;
+  }
+  * {
+    @apply select-none;
+  }
+</style>

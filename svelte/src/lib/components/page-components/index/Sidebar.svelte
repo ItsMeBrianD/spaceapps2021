@@ -80,7 +80,6 @@
         <DatePicker
             on:datechange={(d) => PlaybackManager.setTime(d.detail / 1000)}
             selected={new Date($currentTime * 1000)}
-           
         />
         
     </section>
@@ -98,18 +97,15 @@
         @apply px-6 py-8 flex flex-col h-full;
     }
     img {
-        @apply w-2/3 mx-auto mb-4;
-        max-height: 10rem;
+        @apply w-1/2 mx-auto mb-4;
+        max-height: 8rem;
         width: auto;
     }
     header {
-        @apply text-center mb-4;
+        @apply text-center mb-2;
     }
     header:not(aside > header) {
-        @apply mt-6;
-    }
-    header h1 {
-        @apply text-2xl font-bold mb-2 text-primary-500;
+        @apply mt-2;
     }
     header hr {
         @apply border-primary-500 my-2;
@@ -118,7 +114,7 @@
         @apply mx-4 my-4;
     }
     section > header {
-        @apply mb-8;
+        @apply mb-4;
     }
     section header h2 {
         @apply text-xl font-bold mb-2;
@@ -137,9 +133,6 @@
     }
     .buttonRow button {
         @apply flex-1;
-    }
-    .buttonRow button.active {
-        @apply bg-green-500;
     }
     button.play {
         @apply w-full bg-green-500 active:bg-green-700 hover:bg-green-600;
