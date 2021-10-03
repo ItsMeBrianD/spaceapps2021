@@ -6,7 +6,7 @@
     import type {TleStore} from "../../../state/TleStore";
     import {WorldWindModule} from "../../../utils/WorldWindModule";
     import {
-        currentTime, Increment, PlaybackManager, playing,
+        currentTime, PlaybackManager, playing,
 } from "../../../state/AppState";
     import {leftPad} from "../../../utils/time";
     
@@ -30,8 +30,11 @@
         e.target.blur();
     }
 
-    function updateIncrement(i: Increment) {
-        PlaybackManager.increment = i;
+    function updateIncrement(offset: number) {
+        PlaybackManager.increment += offset;
+    }
+    function resetIncrement() {
+        PlaybackManager.increment = 1;
     }
 
     let formattedTime;
@@ -45,7 +48,8 @@
     <header>
         <h1>Sprocket Orbital Tracker</h1>
         <hr/>
-        <i>Press Shift+Space to pause/play</i>
+        <i>Press Shift+Space to pause/play</i><br/>
+        <i class="lg:hidden">Visualization is below filters</i>
     </header>
 
     <section>
@@ -60,11 +64,11 @@
         <header><h2>Controls</h2></header>
         <pre>As of {formattedTime} (local time)</pre>
         <div class="buttonRow">
-            <button class:active={PlaybackManager.increment === Increment.SLOWER} on:click={() => { updateIncrement(Increment.SLOWER) }}>Slower</button>
-            <button class:active={PlaybackManager.increment === Increment.SLOW} on:click={() => { updateIncrement(Increment.SLOW) }}>Slow</button>
-            <button class:active={PlaybackManager.increment === Increment.REAL_TIME} on:click={() => { updateIncrement(Increment.REAL_TIME) }}>Real Time</button>
-            <button class:active={PlaybackManager.increment === Increment.FAST} on:click={() => { updateIncrement(Increment.FAST) }}>Fast</button>
-            <button class:active={PlaybackManager.increment === Increment.FASTER} on:click={() => { updateIncrement(Increment.FASTER) }}>Faster</button>
+            <button on:click={() => updateIncrement(-2)}>--</button>
+            <button on:click={() => updateIncrement(-1)}>-</button>
+            <button on:click={resetIncrement}>{PlaybackManager.increment}x</button>
+            <button on:click={() => updateIncrement(1)}>+</button>
+            <button on:click={() => updateIncrement(2)}>++</button>
         </div>
         <button on:click={() => { $playing = !$playing }} class="play">
             {$playing ? "Pause" : "Play"}
@@ -108,7 +112,10 @@
         @apply border-t-2 border-primary-500 pb-4;
     }
     .buttonRow {
-        @apply flex my-2;
+        @apply flex my-2 justify-between;
+    }
+    .buttonRow button {
+        @apply flex-1;
     }
     .buttonRow button.active {
         @apply bg-green-500;

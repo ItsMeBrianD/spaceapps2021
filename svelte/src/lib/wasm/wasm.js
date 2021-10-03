@@ -6158,11 +6158,6 @@ var _malloc = Module["_malloc"] = function() {
 };
 
 /** @type {function(...*):?} */
-var _free = Module["_free"] = function() {
-  return (_free = Module["_free"] = Module["asm"]["free"]).apply(null, arguments);
-};
-
-/** @type {function(...*):?} */
 var ___errno_location = Module["___errno_location"] = function() {
   return (___errno_location = Module["___errno_location"] = Module["asm"]["__errno_location"]).apply(null, arguments);
 };
@@ -6175,6 +6170,11 @@ var ___getTypeName = Module["___getTypeName"] = function() {
 /** @type {function(...*):?} */
 var ___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = function() {
   return (___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = Module["asm"]["__embind_register_native_and_builtin_types"]).apply(null, arguments);
+};
+
+/** @type {function(...*):?} */
+var _free = Module["_free"] = function() {
+  return (_free = Module["_free"] = Module["asm"]["free"]).apply(null, arguments);
 };
 
 /** @type {function(...*):?} */

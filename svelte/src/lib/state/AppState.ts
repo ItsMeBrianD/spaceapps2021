@@ -18,7 +18,7 @@ export enum Increment {
 
 class PBManager {
 
-    increment: Increment = Increment.REAL_TIME;
+    increment: number = 1;
 
     private _val = initialTime;
     

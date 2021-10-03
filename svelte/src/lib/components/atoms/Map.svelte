@@ -29,6 +29,6 @@ import {WorldWindModule} from "../../utils/WorldWindModule";
 
 <style lang="postcss">
 	div, canvas {
-		@apply h-full w-full;
+		@apply w-full lg:h-full lg:mt-0 -mt-40 h-screen;
 	}
 </style>
