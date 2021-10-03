@@ -72,7 +72,7 @@ class WWModule {
             {layer: new ww.StarFieldLayer(), enabled: true},
 
             // Orbital paths layer
-            // {layer: pathsLayer, enabled: true},
+            {layer: pathsLayer, enabled: true},
         ];
         layers.forEach(l => { this.worldWin.addLayer(l.layer) });
 
