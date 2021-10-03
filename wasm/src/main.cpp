@@ -24,7 +24,7 @@ std::vector<std::string> splitString(std::string s, char delim) {
 /**
  * Converts a buffer of characters at a given memory address to an array of TLE formatted orbital data.
  */
-std::vector<std::string> bufferToTLEs(uintptr_t address, int length) {
+std::vector<std::string> loadTLEs(uintptr_t address, int length) {
   const char *ptr = reinterpret_cast<char *>(address);
 
   std::vector<std::string> out;
@@ -52,25 +52,20 @@ std::vector<std::string> bufferToTLEs(uintptr_t address, int length) {
   return out;
 }
 
-std::vector<std::vector<std::string>> getPositions(uintptr_t tlesAddress, int length) {
-  std::vector<std::string> tles = bufferToTLEs(tlesAddress, length);
+struct ObjWithId {
+  std::string id;
+  Obj obj;
+};
 
-  std::vector<std::vector<std::string>> out(tles.size());
+std::vector<ObjWithId> OBJS;
 
-  time_t t = time(0);
-  struct tm * timeStruct = gmtime(&t);
-  int year = timeStruct->tm_year + 1900;
-  int month = timeStruct->tm_mon + 1;
-  float day = timeStruct->tm_mday + (timeStruct->tm_hour/24.0) + (timeStruct->tm_min/(60.0*24.0)) + (timeStruct->tm_sec/(60.0*60.0*24.0));
+void loadObjs(uintptr_t address, int length) {
+  std::vector<std::string> tles = loadTLEs(address, length);
+  OBJS.resize(tles.size());
 
-  Now now, *np = &now;
-  memset(np, 0, sizeof(*np));
-	cal_mjd(month, day, year, &mjd);
-
-  // compute position of each object
-  for (int i = 0; i < tles.size(); i++) {
-    Obj obj, *op = &obj;
-    memset(op, 0, sizeof(*op));
+  for (int i = 0; i < OBJS.size(); i++) {
+    Obj *objPtr = &OBJS[i].obj;
+    memset(objPtr, 0, sizeof(*objPtr));
 
     std::string s = tles.at(i);
     std::vector<std::string> split = splitString(s, '\n');
@@ -78,15 +73,36 @@ std::vector<std::vector<std::string>> getPositions(uintptr_t tlesAddress, int le
     std::string line1 = split.at(1);
     std::string line2 = split.at(2);
 
-    db_tle(&line0[0], &line1[0], &line2[0], op);
-    (void)obj_earthsat(np, op);
-
     std::string id = line2.substr(2, 5);
+    OBJS[i].id = id;
+
+    db_tle(&line0[0], &line1[0], &line2[0], objPtr);
+  }
+}
+
+std::vector<std::vector<std::string>> getPositions(uintptr_t tlesAddress, int length) {
+  std::vector<std::vector<std::string>> out(OBJS.size());
+
+  // Get current time
+  Now now, *np = &now;
+  memset(np, 0, sizeof(*np));
+  time_t t = time(0);
+  struct tm * timeStruct = gmtime(&t);
+  int year = timeStruct->tm_year + 1900;
+  int month = timeStruct->tm_mon + 1;
+  float day = timeStruct->tm_mday + (timeStruct->tm_hour/24.0) + (timeStruct->tm_min/(60.0*24.0)) + (timeStruct->tm_sec/(60.0*60.0*24.0));
+	cal_mjd(month, day, year, &mjd);
+
+  // Compute position of each object
+  for (int i = 0; i < OBJS.size(); i++) {
+    ObjWithId objWithId = OBJS[i];
+    (void)obj_earthsat(np, &(objWithId.obj));
 
     std::vector<std::string> info {
-      id,
-      std::to_string(raddeg(obj.es.ess_sublat)),
-      std::to_string(raddeg(obj.es.ess_sublng))
+      objWithId.id,
+      std::to_string(objWithId.obj.es.ess_elev),
+      std::to_string(raddeg(objWithId.obj.es.ess_sublat)),
+      std::to_string(raddeg(objWithId.obj.es.ess_sublng))
     };
     out.at(i) = info;
   }
@@ -197,7 +213,8 @@ EMSCRIPTEN_BINDINGS(my_module) {
   function("hello", &hello);
   function("tleToObj", &tleToObj, allow_raw_pointers());
   function("printBuffer", &printBuffer, allow_raw_pointers());
-  function("bufferToTLEs", &bufferToTLEs);
+  function("loadTLEs", &loadTLEs);
+  function("loadObjs", &loadObjs);
   function("getPositions", &getPositions);
 
   register_vector<std::string>("VectorString");

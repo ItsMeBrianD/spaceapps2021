@@ -5,7 +5,7 @@
   const wasm = getContext(ContextKeys.WasmStore).wasmMod;
 
   async function render() {
-    const tles = await fetch("/norad/catalog.txt").then(async r => r.text());
+    const tles = await fetch("/norad/catalog_small.txt").then(async r => r.text());
 
     let enc = new TextEncoder();
     let tleArray = enc.encode(tles);
@@ -14,19 +14,23 @@
     let dataHeap = new Uint8Array(wasm.HEAPU8.buffer, dataPtr, tleArray.length);
     dataHeap.set(tleArray);
 
+    let start = new Date();
+    wasm.loadObjs(dataPtr, tleArray.length);
+    let end = new Date();
+    let elapsed = end.getTime() - start.getTime();
+    console.log(`LOAD: ${elapsed}ms`);
 
-    const start = new Date();
+    start = new Date();
     let retVector = wasm.getPositions(dataPtr, tleArray.length);
-    const end = new Date();
-    const elapsed = end.getTime() - start.getTime();
+    end = new Date();
+    elapsed = end.getTime() - start.getTime();
+    console.log(`CALC: ${elapsed}ms to calculate ${retVector.size()} positions`);
+    for (let i = 0; i < retVector.size(); i++) {
+      let info = retVector.get(i);
+      console.log(`${info.get(0)}\t${info.get(1)}\t${info.get(2)}\t${info.get(3)}`);
+    }
+    retVector.delete();
 
-    
-    console.log(`took ${elapsed} ms to calculate ${retVector.size()} positions`);
-
-    // for (let i = 0; i < retVector.size(); i++) {
-    //   let info = retVector.get(i);
-    //   console.log(info.get(0), info.get(1), info.get(2));
-    // }
   }
 
   render();
