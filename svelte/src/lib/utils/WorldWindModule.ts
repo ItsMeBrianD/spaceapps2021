@@ -47,19 +47,24 @@ class WWModule {
             this.placemarks = {};
         };
 
+        let selected;
+        selectedObject.subscribe(x => selected = x);
+
         const posSub = s.positions.subscribe(allPositions => {
             allPositions.forEach(pos => {
+                const properties = {
+                    id: pos.id,
+                    lat: pos.lat,
+                    long: pos.long,
+                    alt: pos.alt,
+                };
+
                 if (!this.placemarks[pos.id]) {
                     // Build new placemark
                     const position = new ww.Position(pos.lat, pos.long, pos.alt);
 
                     const placemark = new ww.Placemark(position);
-                    placemark.userProperties = {
-                        id: pos.id,
-                        lat: pos.lat,
-                        long: pos.long,
-                        alt: pos.alt,
-                    };
+                    placemark.userProperties = properties;
                     placemark.attributes.imageScale = 5;
                     placemark.attributes.imageColor = RED;
                     
@@ -70,6 +75,10 @@ class WWModule {
                     this.placemarks[pos.id].position.altitude = pos.alt;
                     this.placemarks[pos.id].position.latitude = pos.lat;
                     this.placemarks[pos.id].position.longitude = pos.long;
+                }
+
+                if (pos.id === selected?.id) {
+                    selectedObject.set(properties);
                 }
             });
             this.worldWin.redraw();
@@ -87,9 +96,8 @@ class WWModule {
             const pickList = this.worldWin.pick(this.worldWin.canvasCoordinates(x, y));
 
             // If more than one object clicked, top of the array is top object clicked, if its not terrain it is an object
-            if (pickList.objects.length > 1 && !pickList.objects[0].isTerrain) {
+            if (!pickList.objects[0]?.isTerrain) {
                 const properties = pickList.objects[0].userObject.userProperties;
-                console.log(properties);
                 this.placemarks[properties.id].attributes.imageColor = GREEN;
                 selectedObject.update(curr => {
                     if (curr) {
