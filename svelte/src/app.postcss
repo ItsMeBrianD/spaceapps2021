@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 #svelte {
-	@apply h-screen w-screen overflow-hidden;
+	@apply h-screen w-screen lg:overflow-hidden;
 }
 * {
 	font-family: "Montserrat";
@@ -15,5 +15,12 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 button {
-	@apply text-gray-800 bg-primary-500 hover:bg-primary-600 active:bg-primary-700 px-2 py-1 select-none;
+	@apply text-gray-800 bg-primary-500 
+			px-4 py-2
+			lg:px-2 lg:py-1 select-none
+			;
+}
+
+button:enabled {
+	@apply hover:bg-primary-600 active:bg-primary-700 
 }
