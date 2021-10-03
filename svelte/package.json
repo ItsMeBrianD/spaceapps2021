@@ -31,6 +31,7 @@
 	"type": "module",
 	"dependencies": {
 		"@nasaworldwind/worldwind": "^0.10.0",
+		"@supabase/supabase-js": "^1.24.0",
 		"@sveltejs/adapter-vercel": "next",
 		"@types/faker": "^5.5.8",
 		"faker": "^5.5.3"

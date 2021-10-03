@@ -1,11 +1,13 @@
 <script lang="ts">
     import { selectedObject } from "$lib/state/AppState";
 
-    import satcat from "../../../../static/norad/satcat.json";
-
     let cat;
+    const getCatInfo = async () => {
+        cat = await fetch(`/api/satcat?catId=${$selectedObject.id}`).then(r => r.json());
+    }
+
     if ($selectedObject) {
-        cat = satcat.find(x => parseInt(x.NORAD_CAT_ID) === parseInt($selectedObject.id));
+        getCatInfo();
     }
 
     const formatLatLong = x => `${x > 0 ? "+" : ""}${x.toFixed(3)}`;
