@@ -8,7 +8,7 @@ export enum ContextKeys {
 
 export const availableDatasets: SelectOption[] = [
     {
-        label: "Select Some Data",
+        label: "Select A Dataset",
         value: "",
     },
     {

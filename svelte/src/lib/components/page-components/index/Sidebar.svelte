@@ -66,28 +66,32 @@
 
     <section class="flex-1">
         <header><h2>Controls</h2></header>
-        <pre>As of {formattedTime} (local time)</pre>
-        <div class="buttonRow">
+
+        <pre>Time Scale</pre>
+        <div class="buttonRow">    
             <button on:click={() => updateIncrement(-2)}>--</button>
             <button on:click={() => updateIncrement(-1)}>-</button>
             <button on:click={resetIncrement}>{PlaybackManager.increment}x</button>
             <button on:click={() => updateIncrement(1)}>+</button>
             <button on:click={() => updateIncrement(2)}>++</button>
         </div>
-        <div class="buttonRow">
-            <button class="w-full mt-2" on:click={() => PlaybackManager.setTime(new Date().getTime())}>Reset to Now</button>
-        </div>
+        <pre>Skip To</pre>
         <div class="buttonRow">
         <DatePicker
             on:datechange={(d) => PlaybackManager.setTime(d.detail)}
             selected={new Date($currentTime)}
-        />
-    </div>
-    <div class="buttonRow">
-        <button on:click={() => { $playing = !$playing }} class="play">
-            {$playing ? "Pause" : "Play"}
-        </button>
-    </div>
+        />    
+        </div>
+        <div class="buttonRow">
+            <button class="w-full mt-2" on:click={() => PlaybackManager.setTime(new Date().getTime())}>Reset to Now</button>
+        </div>
+    
+        <pre>As of {formattedTime} (local time)</pre>
+        <div class="buttonRow">
+            <button on:click={() => { $playing = !$playing }} class="play">
+                {$playing ? "Pause" : "Play"}
+            </button>
+        </div>
         
     </section>
 
@@ -109,10 +113,10 @@
         width: auto;
     }
     header {
-        @apply text-center mb-2;
+        @apply text-center mb-1;
     }
     header:not(aside > header) {
-        @apply mt-2;
+        @apply mt-1;
     }
     header hr {
         @apply border-primary-500 my-2;
@@ -121,13 +125,13 @@
         @apply mx-4 my-4;
     }
     section > header {
-        @apply mb-4;
+        @apply mb-2;
     }
     section header h2 {
         @apply text-xl font-bold mb-2;
     }
     section label {
-        @apply flex justify-between;
+        @apply flex justify-between items-center;
     }
     section label :global(select) {
         @apply w-2/3;
@@ -136,7 +140,7 @@
         @apply pb-4;
     }
     .buttonRow {
-        @apply flex my-2 justify-between;
+        @apply flex my-2 justify-between items-center;
     }
     .buttonRow button {
         @apply flex-1;

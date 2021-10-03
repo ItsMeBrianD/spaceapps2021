@@ -5,7 +5,7 @@
 
 <style lang="postcss">
     .loader {
-        @apply border-gray-200 h-32 w-32 rounded-full ease-linear border-8 border-t-8;
+        @apply border-gray-200 h-16 w-16 rounded-full ease-linear border-4 border-t-4;
         border-top-color: theme("colors.secondary.500");
         -webkit-animation: spinner 1.5s linear infinite;
         animation: spinner 1.5s linear infinite;
