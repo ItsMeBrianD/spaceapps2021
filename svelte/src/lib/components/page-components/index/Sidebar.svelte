@@ -5,18 +5,26 @@
     import {availableDatasets, ContextKeys} from "$lib/utils/constants";
     import Select from "$lib/components/atoms/Select.svelte";
 import type { TleStore } from "../../../state/TleStore";
+import { WorldWindModule } from "../../../utils/WorldWindModule";
+import { playing } from "../../../state/AppState";
     
 
 
     const wasm: TleStore = getContext(ContextKeys.WasmStore);
 
     async function handleSelectDataset(e) {
+        // This one's for you Zach
+        WorldWindModule.yeet();
+
         if (!e.target.value) return;
+        
         const newDatasetLocation = e.target.value;
         
         const newData = await fetch(newDatasetLocation).then(async r => r.text());
         wasm.updateValues(newData);
-        wasm.getPositions(0);
+        wasm.getPositions(Math.floor(new Date().getTime() / 1000));
+
+        e.target.blur();
     }
 </script>
 
@@ -33,7 +41,17 @@ import type { TleStore } from "../../../state/TleStore";
             Dataset:
             <Select options={availableDatasets} on:change={handleSelectDataset}/>
         </label>
-        
+    </div>
+
+    <div>
+        <header><h2>Controls</h2></header>
+        <button on:click={() => $playing = !$playing}>
+            {#if $playing}
+                Pause
+            {:else}
+                Play
+            {/if}
+        </button>
     </div>
 </section>
 

@@ -5,7 +5,7 @@
   const wasm = getContext(ContextKeys.WasmStore).wasmMod;
 
   async function render() {
-    const tles = await fetch("/norad/catalog_small.txt").then(async r => r.text());
+    const tles = await fetch("/norad/iss.txt").then(async r => r.text());
 
     let enc = new TextEncoder();
     let tleArray = enc.encode(tles);
@@ -21,6 +21,7 @@
 
     for (let i = 0; i < 5; i++) {
       start = new Date();
+      console.log(Math.floor(start.getTime()/1000));
       let retVector = wasm.getPositions(Math.floor(start.getTime()/1000));
       end = new Date();
       elapsed = end.getTime() - start.getTime();

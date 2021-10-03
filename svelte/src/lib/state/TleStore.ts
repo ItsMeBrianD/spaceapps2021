@@ -81,7 +81,7 @@ export class TleStore implements Readable<TleStoreState> {
         if (this.state.loading === true) throw new Error("Wait for Module Initialization before loading TLEs");
 
         const output = [];
-        const positions = this.state.module.getPositions();
+        const positions = this.state.module.getPositions(timestamp);
         for (let i = 0;i < positions.size();i++) {
             const info = positions.get(i);
             output.push({
@@ -92,7 +92,7 @@ export class TleStore implements Readable<TleStoreState> {
             });
         }
         this._positions.set(output);
-        console.log(output);
+        return output;
 
     }
 

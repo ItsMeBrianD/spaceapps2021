@@ -1,5 +1,6 @@
 <script lang="ts">
 	import {getContext, onDestroy, onMount} from "svelte";
+import { playing } from "../../state/AppState";
 import type { TleStore } from "../../state/TleStore";
 import { ContextKeys } from "../../utils/constants";
 import { WorldWindModule } from "../../utils/WorldWindModule";
@@ -18,13 +19,7 @@ import { WorldWindModule } from "../../utils/WorldWindModule";
 
 	function handleKeyPress(e: KeyboardEvent) {
 		if (e.key === " " && e.getModifierState("Shift")) {
-			if (WorldWindModule.playing) {
-				console.log("Pause");
-				WorldWindModule.pause();
-			} else {
-				console.log("Play");
-				WorldWindModule.play();
-			}
+			$playing = !$playing;
 		}
 	}
 
