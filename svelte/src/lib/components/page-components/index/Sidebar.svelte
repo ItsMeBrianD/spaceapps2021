@@ -132,7 +132,7 @@
         @apply w-2/3;
     }
     section {
-        @apply border-t-2 border-primary-500 pb-4;
+        @apply pb-4;
     }
     .buttonRow {
         @apply flex my-2 justify-between;
@@ -141,6 +141,6 @@
         @apply flex-1;
     }
     button.play {
-        @apply w-full bg-secondary-400 active:bg-secondary-600 hover:bg-secondary-500;
+        @apply w-full bg-secondary-500 active:bg-secondary-700 hover:bg-secondary-600;
     }
 </style>

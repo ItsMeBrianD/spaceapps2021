@@ -16,12 +16,16 @@
 </script>
 
 
-{#if cat}
+<div>
+{#if cat || $selectedObject}
     <table>
-        <tr>
-            <th>Catalog Number</th>
-            <td>{$selectedObject ? $selectedObject.id : ""}</td>
-        </tr>
+        <tbody>
+        {#if $selectedObject}
+            <tr>
+                <th>Catalog Number</th>
+                <td>{$selectedObject ? $selectedObject.id : ""}</td>
+            </tr>
+        {/if}
         {#if cat}
             <tr>
                 <th>Name</th>
@@ -43,6 +47,10 @@
                 <th>Launch Site</th>
                 <td>{cat.LAUNCH_SITE}</td>
             </tr>
+        {/if}
+        </tbody>
+        {#if cat}
+        <tbody>
             <tr>
                 <th>Apogee</th>
                 <td>{cat.APOGEE}</td>
@@ -55,36 +63,40 @@
                 <th>Period</th>
                 <td>{cat.PERIOD}</td>
             </tr>
+        </tbody>
         {/if}
+        {#if $selectedObject}
+        <tbody>
+            <tr>
+                <th>Latitude</th>
+                <td>{formatLatLong($selectedObject.lat)}°</td>
+            </tr>
+            <tr>
+                <th>Longitude</th>
+                <td>{formatLatLong($selectedObject.long)}°</td>
+            </tr>
+            <tr>
+                <th>Altitude</th>
+                <td>{formatAlt($selectedObject.alt)} km</td>
+            </tr>
+        </tbody>
+        {/if}
+
     </table>
 {/if}
+</div>
 
-<br />
-
-{#if $selectedObject}
-    <table>
-        <tr>
-            <th>Latitude</th>
-            <td>{formatLatLong($selectedObject.lat)}°</td>
-        </tr>
-        <tr>
-            <th>Longitude</th>
-            <td>{formatLatLong($selectedObject.long)}°</td>
-        </tr>
-        <tr>
-            <th>Altitude</th>
-            <td>{formatAlt($selectedObject.alt)} km</td>
-        </tr>
-    </table>
-{/if}
 
 
 <style lang="postcss">
+    div {
+        @apply w-full text-sm border-2 border-secondary-500 px-4 py-2;
+    }
     table {
-        @apply w-full;
+        @apply w-full
     }
     tr {
-        @apply border-b-2 border-primary-500 py-4 px-4;
+        @apply w-full;
     }
 
     th {
@@ -92,5 +104,8 @@
     }
     td {
         @apply text-right;
+    }
+    tbody:not(:first-child) {
+        @apply border-t-2 border-secondary-500;
     }
 </style>
