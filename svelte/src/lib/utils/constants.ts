@@ -8,10 +8,18 @@ export enum ContextKeys {
 
 export const availableDatasets: SelectOption[] = [
     {
+        label: "Select Some Data",
+        value: "",
+    },
+    {
         label: "All Data",
         value: "/norad/catalog.txt",
     },
-    
+    {
+        label: "ISS Only",
+        value: "/norad/iss.txt",
+    },
+
     {
         label: "Last 30 Days' Launches",
         value: "/norad/tle-new.txt",

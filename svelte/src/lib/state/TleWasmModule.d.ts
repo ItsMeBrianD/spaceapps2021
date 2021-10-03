@@ -3,11 +3,15 @@ export interface TleWasmModuleASM {
 }
 
 export interface TleWasmModule {
-    tleToObj(l0: string, l1: string): number;
     asm: TleWasmModuleASM;
+    HEAPU8: Uint8Array;
+
+    tleToObj(l0: string, l1: string): number;
     printBuffer(buffer: number, length: number);
     hello(): string;
     loadTLEs(tlesAddress: number, length: number): any;
     loadObjs(address: number, length: number): any;
     getPositions(): any;
+    _malloc(x: number);
+    
 }

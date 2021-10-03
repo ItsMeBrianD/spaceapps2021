@@ -4,14 +4,19 @@
     import type {TleWasmModule} from "$lib/state/TleWasmModule";
     import {availableDatasets, ContextKeys} from "$lib/utils/constants";
     import Select from "$lib/components/atoms/Select.svelte";
+import type { TleStore } from "../../../state/TleStore";
+    
 
 
-    const wasm: TleWasmModule = getContext(ContextKeys.WasmStore);
+    const wasm: TleStore = getContext(ContextKeys.WasmStore);
 
     async function handleSelectDataset(e) {
+        if (!e.target.value) return;
         const newDatasetLocation = e.target.value;
+        
         const newData = await fetch(newDatasetLocation).then(async r => r.text());
-        console.log(newData);
+        wasm.updateValues(newData);
+        wasm.getPositions(0);
     }
 </script>
 

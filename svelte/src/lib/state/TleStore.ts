@@ -1,6 +1,9 @@
 import type {
     Readable, Subscriber, Unsubscriber,
 } from "svelte/store";
+import {
+    derived, writable,
+} from "svelte/store";
 import type {TleWasmModule} from "./TleWasmModule";
 
 interface TleLoadingState {
@@ -12,14 +15,25 @@ interface TleLoadedState {
     module: TleWasmModule;
 }
 
+export interface TleOutput {
+    id: string;
+    alt: number;
+    lat: number;
+    long: number;
+}
+
 export type TleStoreState = TleLoadingState | TleLoadedState;
 
 export class TleStore implements Readable<TleStoreState> {
+    
+
     private state: TleStoreState = {loading: true};
 
     private subs = new Set<Subscriber<TleStoreState>>();
 
     private wasmMod: TleWasmModule;
+
+    private _positions = writable<TleOutput[]>([]);
 
     constructor() {
         (async () => {
@@ -38,10 +52,48 @@ export class TleStore implements Readable<TleStoreState> {
         })().catch(console.error);
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    positions: Readable<TleOutput[]> = derived(this._positions, v => v);
+
     subscribe(run: Subscriber<TleStoreState>): Unsubscriber {
         run(this.state);
         this.subs.add(run);
         return () => this.subs.delete(run);
+    }
+
+    updateValues(tles: string): void {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
+        if (this.state.loading === true) throw new Error("Wait for Module Initialization before loading TLEs");
+        const enc = new TextEncoder();
+        const tleArray = enc.encode(tles);
+
+        const dataPtr = this.state.module._malloc(tleArray.length);
+        const dataHeap = new Uint8Array(this.state.module.HEAPU8.buffer, dataPtr, tleArray.length);
+        dataHeap.set(tleArray);
+
+        this.state.module.loadObjs(dataPtr, tleArray.length);
+
+        console.log("Loaded new values into WASM!");
+    }
+
+    getPositions(timestamp: number): TleOutput[] {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
+        if (this.state.loading === true) throw new Error("Wait for Module Initialization before loading TLEs");
+
+        const output = [];
+        const positions = this.state.module.getPositions();
+        for (let i = 0;i < positions.size();i++) {
+            const info = positions.get(i);
+            output.push({
+                id: info.get(0),
+                alt: parseFloat(info.get(1)),
+                lat: parseFloat(info.get(2)),
+                long: parseFloat(info.get(3)),
+            });
+        }
+        this._positions.set(output);
+        console.log(output);
+
     }
 
     private updateState = (newState: TleStoreState): void => {

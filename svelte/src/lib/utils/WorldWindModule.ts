@@ -1,14 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type {TleStore} from "../state/TleStore";
+import type {TleWasmModule} from "../state/TleWasmModule";
 
 class WWModule {
+    private wasmSub: CallableFunction;
+
+    private posSub: CallableFunction;
+
     private interval;
 
-    private placemarks = [];
+    private placemarks: Record<string, any> = {};
     
     private ww: any;
 
     private worldWin: any;
+
+    private wasmModule: TleWasmModule;
 
     get playing() {
         return Boolean(this.interval);
@@ -28,10 +35,18 @@ class WWModule {
     };
 
     init = async (c: HTMLCanvasElement, s: TleStore): Promise<void> => {
+        this.wasmSub = s.subscribe(v => {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
+            if (v.loading === false) {
+                this.wasmModule = v.module;
+            }
+        });
+
         const ww = await import("@nasaworldwind/worldwind");
         this.ww = ww;
         console.log(this.ww);
         this.worldWin = new ww.WorldWindow(c);
+        window.map = this.worldWin;
 
         const layers = [
             // Imagery layers.
@@ -39,7 +54,6 @@ class WWModule {
             // Add atmosphere layer on top of all base layers.
             {layer: new ww.AtmosphereLayer(), enabled: true},
             // ww UI layers.
-            {layer: new ww.CoordinatesDisplayLayer(this.worldWin), enabled: true},
             {layer: new ww.StarFieldLayer(), enabled: true},
         ];
         layers.forEach(l => { this.worldWin.addLayer(l.layer) });
@@ -47,15 +61,25 @@ class WWModule {
         const objectsLayer = new ww.RenderableLayer("Objects");
         this.worldWin.addLayer(objectsLayer);
 
-        const initialPosition = new ww.Position(0, 0, 2000000);
+        this.posSub = s.positions.subscribe(allPositions => {
+            allPositions.forEach(pos => {
+                if (!this.placemarks[pos.id]) {
+                    // Build new placemark
+                    const position = new ww.Position(pos.lat, pos.long, pos.alt);
 
-        
-        const placemark = new ww.Placemark(initialPosition);
-        placemark.attributes.imageScale = 5;
-        placemark.attributes.imageColor = new ww.Color(255, 0, 0, 1);
-        objectsLayer.addRenderable(placemark);
-
-        this.placemarks.push(placemark);
+                    const placemark = new ww.Placemark(position);
+                    placemark.attributes.imageScale = 5;
+                    placemark.attributes.imageColor = new ww.Color(255, 0, 0, 1);
+                    
+                    objectsLayer.addRenderable(placemark);
+                } else {
+                    const position = this.placemarks[pos.id];
+                    position.altitude = pos.alt;
+                    position.latitude = pos.lat;
+                    position.longitude = pos.long;
+                }
+            });
+        });
     };
 }
 
