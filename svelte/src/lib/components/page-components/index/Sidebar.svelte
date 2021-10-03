@@ -69,7 +69,7 @@
         <button on:click={() => { $playing = !$playing }} class="play">
             {$playing ? "Pause" : "Play"}
         </button>
-        <button class="w-full mt-2" on:click={() => { $currentTime = Math.floor(new Date().getTime() / 1000) }}>Reset to Now</button>
+        <button class="w-full mt-2" on:click={() => PlaybackManager.setTime(Math.floor(new Date().getTime() / 1000))}>Reset to Now</button>
     </section>
 </aside>
 

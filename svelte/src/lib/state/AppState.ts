@@ -37,6 +37,11 @@ class PBManager {
             }
         });
     }
+
+    setTime(num: number) {
+        currentTime.set(num);
+        this._val = num;
+    }
     
 }
 
