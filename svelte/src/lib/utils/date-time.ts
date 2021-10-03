@@ -47,3 +47,11 @@ export const uuid = (() => {
     let id = 1;
     return () => ++id;
 })();
+
+export const millisToYMD = (millis: number): [number, number, number] => {
+    const date = new Date(millis);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate() + (date.getHours()/24) + (date.getMinutes()/(60*24)) + (date.getSeconds()/(60*60*24)) + (date.getMilliseconds()/(1000*60*60*24));
+    return [year, month, day];
+}

@@ -64,6 +64,19 @@ var read_,
     readBinary,
     setWindowTitle;
 
+// Normally we don't log exceptions but instead let them bubble out the top
+// level where the embedding environment (e.g. the browser) can handle
+// them.
+// However under v8 and node we sometimes exit the process direcly in which case
+// its up to use us to log the exception before exiting.
+// If we fix https://github.com/emscripten-core/emscripten/issues/15080
+// this may no longer be needed under node.
+function logExceptionOnExit(e) {
+  if (e instanceof ExitStatus) return;
+  var toLog = e;
+  err('exiting due to exception: ' + toLog);
+}
+
 var nodeFS;
 var nodePath;
 
@@ -121,13 +134,19 @@ readAsync = function readAsync(filename, onload, onerror) {
     }
   });
 
-  process['on']('unhandledRejection', abort);
+  // Without this older versions of node (< v15) will log unhandled rejections
+  // but return 0, which is not normally the desired behaviour.  This is
+  // not be needed with node v15 and about because it is now the default
+  // behaviour:
+  // See https://nodejs.org/api/cli.html#cli_unhandled_rejections_mode
+  process['on']('unhandledRejection', function(reason) { throw reason; });
 
   quit_ = function(status, toThrow) {
     if (keepRuntimeAlive()) {
       process['exitCode'] = status;
       throw toThrow;
     }
+    logExceptionOnExit(toThrow);
     process['exit'](status);
   };
 
@@ -148,8 +167,10 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
   // otherwise, slice off the final part of the url to find the script directory.
   // if scriptDirectory does not contain a slash, lastIndexOf will return -1,
   // and scriptDirectory will correctly be replaced with an empty string.
+  // If scriptDirectory contains a query (starting with ?) or a fragment (starting with #),
+  // they are removed because they could contain a slash.
   if (scriptDirectory.indexOf('blob:') !== 0) {
-    scriptDirectory = scriptDirectory.substr(0, scriptDirectory.lastIndexOf('/')+1);
+    scriptDirectory = scriptDirectory.substr(0, scriptDirectory.replace(/[?#].*/, "").lastIndexOf('/')+1);
   } else {
     scriptDirectory = '';
   }
@@ -1203,13 +1224,15 @@ function abort(what) {
     }
   }
 
-  what += '';
+  what = 'Aborted(' + what + ')';
+  // TODO(sbc): Should we remove printing and leave it up to whoever
+  // catches the exception?
   err(what);
 
   ABORT = true;
   EXITSTATUS = 1;
 
-  what = 'abort(' + what + '). Build with -s ASSERTIONS=1 for more info.';
+  what += '. Build with -s ASSERTIONS=1 for more info.';
 
   // Use a wasm runtime error, because a JS error might be seen as a foreign
   // exception, which means we'd run destructors on it. We need the error to
@@ -1451,9 +1474,6 @@ var ASM_CONSTS = {
       if (e instanceof ExitStatus || e == 'unwind') {
         return EXITSTATUS;
       }
-      // Anything else is an unexpected exception and we treat it as hard error.
-      var toLog = e;
-      err('exception thrown: ' + toLog);
       quit_(1, e);
     }
 
@@ -3234,7 +3254,7 @@ var ASM_CONSTS = {
     }
 
   function _abort() {
-      abort();
+      abort('');
     }
 
   function _emscripten_memcpy_big(dest, src, num) {

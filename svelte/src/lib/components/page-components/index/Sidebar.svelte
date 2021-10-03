@@ -12,6 +12,7 @@
     import {leftPad} from "../../../utils/time";
     import ObjectInfo from "$lib/components/atoms/ObjectInfo.svelte";
     import DatePicker from "$lib/components/atoms/DatePicker.svelte";
+    import { millisToYMD } from "$lib/utils/date-time";
     
     const wasm: TleStore = getContext(ContextKeys.WasmStore);
 
@@ -28,7 +29,7 @@
         const newData = await fetch(newDatasetLocation).then(async r => r.text());
         wasm.updateValues(newData);
 
-        wasm.getPositions(Math.floor($currentTime));
+        wasm.getPositions(...millisToYMD($currentTime));
 
         e.target.blur();
     }
@@ -42,8 +43,8 @@
 
     let formattedTime;
     $: if ($currentTime) {
-        const date = new Date($currentTime * 1000);
-        formattedTime = `${leftPad(date.getFullYear())}${leftPad(date.getMonth() + 1)}${leftPad(date.getDate())} @ ${leftPad(date.getHours())}:${leftPad(date.getMinutes())}:${leftPad(date.getSeconds())}`;
+        const date = new Date($currentTime);
+        formattedTime = `${leftPad(date.getFullYear())}-${leftPad(date.getMonth() + 1)}-${leftPad(date.getDate())} @ ${leftPad(date.getHours())}:${leftPad(date.getMinutes())}:${leftPad(date.getSeconds())}`;
     }
 </script>
 
@@ -74,12 +75,12 @@
             <button on:click={() => updateIncrement(2)}>++</button>
         </div>
         <div class="buttonRow">
-            <button class="w-full mt-2" on:click={() => PlaybackManager.setTime(Math.floor(new Date().getTime() / 1000))}>Reset to Now</button>
+            <button class="w-full mt-2" on:click={() => PlaybackManager.setTime(new Date().getTime())}>Reset to Now</button>
         </div>
         <div class="buttonRow">
         <DatePicker
-            on:datechange={(d) => PlaybackManager.setTime(d.detail / 1000)}
-            selected={new Date($currentTime * 1000)}
+            on:datechange={(d) => PlaybackManager.setTime(d.detail)}
+            selected={new Date($currentTime)}
         />
     </div>
     <div class="buttonRow">

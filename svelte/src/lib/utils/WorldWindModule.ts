@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {currentTime, selectedObject} from "../state/AppState";
 import type {TleStore} from "../state/TleStore";
+import { millisToYMD } from "./date-time";
 
 class WWModule {
     yeet: CallableFunction;
@@ -174,7 +175,7 @@ class WWModule {
 
 
 
-        const timeChangedSub = currentTime.subscribe(time => this.store.getPositions(Math.floor(time)));
+        const timeChangedSub = currentTime.subscribe(time => this.store.getPositions(...millisToYMD(time)));
         console.log(timeChangedSub);
         this.unsubs.push(timeChangedSub);
     };

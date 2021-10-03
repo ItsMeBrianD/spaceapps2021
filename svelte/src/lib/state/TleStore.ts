@@ -76,13 +76,13 @@ export class TleStore implements Readable<TleStoreState> {
         console.log("Loaded new values into WASM!");
     }
 
-    getPositions(timestamp: number): TleOutput[] {
+    getPositions(year: number, month: number, day: number): TleOutput[] {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
         if (this.state.loading === true) throw new Error("Wait for Module Initialization before loading TLEs");
         // console.log(timestamp);
         // console.trace();
         const output = [];
-        const positions = this.state.module.getPositions(timestamp);
+        const positions = this.state.module.getPositions(year, month, day);
         for (let i = 0;i < positions.size();i++) {
             const info = positions.get(i);
             output.push({
