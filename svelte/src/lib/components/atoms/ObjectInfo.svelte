@@ -1,20 +1,16 @@
 <script lang="ts">
     import { selectedObject } from "$lib/state/AppState";
-import { onDestroy } from "svelte";
-import { WorldWindModule } from "../../utils/WorldWindModule";
-import Spinner from "./Spinner.svelte";
+    import { onDestroy } from "svelte";
+    import { WorldWindModule } from "../../utils/WorldWindModule";
+    import Spinner from "./Spinner.svelte";
 
     let cat;
     let loading = false;
-    const getCatInfo = async () => {
-        
-        console.log(cat);
-    }
 
     const unsub = selectedObject.subscribe(async (v) => {
         if(!v?.id) {
             cat = undefined;
-        } else {
+        } else if (!cat || cat.NORAD_CAT_ID.toString() !== v.id) {
             loading = true;
             cat = await fetch(`/api/satcat?catId=${v.id}`).then(r => r.json());
             WorldWindModule.placemarks[v.id].label = cat.OBJECT_NAME;
