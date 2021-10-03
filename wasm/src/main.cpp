@@ -60,6 +60,7 @@ struct ObjWithId {
 std::vector<ObjWithId> OBJS;
 
 void loadObjs(uintptr_t address, int length) {
+  OBJS.clear();
   std::vector<std::string> tles = loadTLEs(address, length);
 
   for (int i = 0; i < tles.size(); i++) {
@@ -84,13 +85,13 @@ void loadObjs(uintptr_t address, int length) {
   }
 }
 
-std::vector<std::vector<std::string>> getPositions() {
+std::vector<std::vector<std::string>> getPositions(long timestamp) {
   std::vector<std::vector<std::string>> out(OBJS.size());
 
   // Get current time
   Now now, *np = &now;
   memset(np, 0, sizeof(*np));
-  time_t t = time(0);
+  time_t t = (time_t) timestamp;
   struct tm * timeStruct = gmtime(&t);
   int year = timeStruct->tm_year + 1900;
   int month = timeStruct->tm_mon + 1;
