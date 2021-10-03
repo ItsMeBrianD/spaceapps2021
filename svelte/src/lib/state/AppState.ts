@@ -6,8 +6,6 @@ export const playing = writable<boolean>(false);
 
 export const currentTime = writable<number>(initialTime);
 
-currentTime.subscribe(console.log)
-
 export const selectedObject = writable<any>(null);
 
 class PBManager {
