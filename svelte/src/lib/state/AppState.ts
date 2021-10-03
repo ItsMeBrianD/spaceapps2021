@@ -6,6 +6,15 @@ export const playing = writable<boolean>(false);
 
 export const currentTime = writable<number>(initialTime);
 
+export const selectedObject = writable<any>(null);
+
+export enum Increment {
+    SLOWER = 0.333333333,
+    SLOW = 0.5,
+    REAL_TIME = 1,
+    FAST = 5,
+    FASTER = 15,
+}
 
 class PBManager {
 

@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {currentTime} from "../state/AppState";
+import {currentTime, selectedObject} from "../state/AppState";
 import type {TleStore} from "../state/TleStore";
 
 class WWModule {
     yeet: CallableFunction;
-
 
     private unsubs: CallableFunction[] = [];
 
@@ -21,6 +20,10 @@ class WWModule {
         this.store = s;
         
         const ww = await import("@nasaworldwind/worldwind");
+        const RED = new ww.Color(255, 0, 0, 1);
+        const GREEN = new ww.Color(0, 255, 0, 1);
+
+
         this.ww = ww;
         console.log(this.ww);
         this.worldWin = new ww.WorldWindow(c);
@@ -51,8 +54,14 @@ class WWModule {
                     const position = new ww.Position(pos.lat, pos.long, pos.alt);
 
                     const placemark = new ww.Placemark(position);
+                    placemark.userProperties = {
+                        id: pos.id,
+                        lat: pos.lat,
+                        long: pos.long,
+                        alt: pos.alt,
+                    };
                     placemark.attributes.imageScale = 5;
-                    placemark.attributes.imageColor = new ww.Color(255, 0, 0, 1);
+                    placemark.attributes.imageColor = RED;
                     
                     objectsLayer.addRenderable(placemark);
 
@@ -66,6 +75,44 @@ class WWModule {
             this.worldWin.redraw();
         });
         this.unsubs.push(posSub);
+
+        // The common gesture-handling function.
+        const handleClick = recognizer => {
+            // Obtain the event location.
+            const x = recognizer.clientX,
+                y = recognizer.clientY;
+
+            // Perform the pick. Must first convert from window coordinates to canvas coordinates, which are
+            // relative to the upper left corner of the canvas rather than the upper left corner of the page.
+            const pickList = this.worldWin.pick(this.worldWin.canvasCoordinates(x, y));
+
+            // If more than one object clicked, top of the array is top object clicked, if its not terrain it is an object
+            if (pickList.objects.length > 1 && !pickList.objects[0].isTerrain) {
+                const properties = pickList.objects[0].userObject.userProperties;
+                console.log(properties);
+                this.placemarks[properties.id].attributes.imageColor = GREEN;
+                selectedObject.update(curr => {
+                    if (curr) {
+                        this.placemarks[curr.id].attributes.imageColor = RED;
+                    }
+                    return properties;
+                });
+                this.worldWin.redraw();
+            } else {
+                selectedObject.update((curr) => {
+                    if (!curr) return;
+                    this.placemarks[curr.id].attributes.imageColor = RED;
+                    return null;
+                });
+            }
+            this.worldWin.redraw();
+        };
+
+        // Listen for mouse clicks.
+        const clickRecognizer = new ww.ClickRecognizer(this.worldWin, handleClick);
+
+        // Listen for taps on mobile devices.
+        const tapRecognizer = new ww.TapRecognizer(this.worldWin, handleClick);
 
         const timeChangedSub = currentTime.subscribe(time => this.store.getPositions(Math.floor(time)));
         console.log(timeChangedSub);
