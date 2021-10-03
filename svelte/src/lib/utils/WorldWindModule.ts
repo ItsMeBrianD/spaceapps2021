@@ -138,7 +138,7 @@ class WWModule {
             const pickList = this.worldWin.pick(this.worldWin.canvasCoordinates(x, y));
 
             // If more than one object clicked, top of the array is top object clicked, if its not terrain it is an object
-            if (!pickList.objects[0]?.isTerrain) {
+            if (pickList.objects.length && !pickList.objects[0]?.isTerrain) {
                 const properties = pickList.objects[0].userObject.userProperties;
                 this.placemarks[properties.id].attributes.imageSource = "/images/pink.png";
 
