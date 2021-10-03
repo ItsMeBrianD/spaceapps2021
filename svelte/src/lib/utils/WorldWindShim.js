@@ -34,7 +34,6 @@ export const shim = (WorldWind) => {
             // less than a predetermined minimum (usually one). The computed near distance automatically scales with the
             // resolution of the WebGL depth buffer.
             var nearDistance = WorldWind.WWMath.perspectiveNearDistanceForFarDistance(farDistance, 10, this.depthBits) / 4;
-            console.log(nearDistance);
             
             // Prevent the near clip plane from intersecting the terrain.
             var distanceToSurface = eyePos.altitude - globe.elevationAtLocation(eyePos.latitude, eyePos.longitude);
