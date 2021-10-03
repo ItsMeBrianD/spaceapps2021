@@ -10,7 +10,6 @@
 
 <script lang="ts">
     export let options: SelectOption[];
-    export let handleChange: (e: any) => Promise<void>;
 
     let groups: Record<string, SelectOption[]> = {};
     $: groups = options.reduce<Record<string, SelectOption[]>>((acc, val) => {
@@ -31,7 +30,7 @@
 </script>
 
 
-<select on:change={handleChange}>
+<select on:change>
     {#each Object.entries(groups) as [group, values]}
         {#if group !== "__"}
             <optgroup label={group}>
@@ -49,6 +48,6 @@
 
 <style lang="postcss">
     select {
-        @apply text-gray-100 bg-gray-800;
+        @apply text-gray-100 bg-gray-800 select-none cursor-pointer;
     }
 </style>

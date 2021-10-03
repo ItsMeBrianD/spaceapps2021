@@ -16,10 +16,24 @@ import { WorldWindModule } from "../../utils/WorldWindModule";
 	    
 	});
 
+	function handleKeyPress(e: KeyboardEvent) {
+		if (e.key === " " && e.getModifierState("Shift")) {
+			if (WorldWindModule.playing) {
+				console.log("Pause");
+				WorldWindModule.pause();
+			} else {
+				console.log("Play");
+				WorldWindModule.play();
+			}
+		}
+	}
+
 </script>
 
+<svelte:body on:keypress={handleKeyPress}/>
+
 <canvas bind:this={canvas}/>
-<div bind:this={el}/>
+
 
 <style lang="postcss">
 	div, canvas {

@@ -19,14 +19,14 @@
     <header>
         <h1>Sprocket Orbital Tracker</h1>
         <hr/>
-        <i>Press Ctrl+Space to pause/play</i>
+        <i>Press Shift+Space to pause/play</i>
     </header>
 
     <div>
         <header><h2>Filters</h2></header>
         <label>
             Dataset:
-            <Select options={availableDatasets} handleChange={handleSelectDataset}/>
+            <Select options={availableDatasets} on:change={handleSelectDataset}/>
         </label>
         
     </div>
