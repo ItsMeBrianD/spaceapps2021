@@ -52,7 +52,6 @@
     <header>
         <img src="/images/Full_Logo_Light.png" alt="Sprocket Orbital Tracker"/>
         <hr/>
-        <pre class="hidden lg:inline">Press Shift+Space to pause/play</pre><br/>
         <pre class="lg:hidden">Visualization is below filters</pre>
     </header>
 
@@ -80,7 +79,7 @@
         <DatePicker
             on:datechange={(d) => PlaybackManager.setTime(d.detail.getTime())}
             selected={new Date($currentTime)}
-        />  <button class="w-full mt-2" on:click={() => PlaybackManager.setTime(new Date().getTime())}>Reset to Now</button>  
+        />  <button class="w-full" on:click={() => PlaybackManager.setTime(new Date().getTime())}>Reset</button>  
         </div>
         <div class="buttonRow">
             

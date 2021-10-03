@@ -41,7 +41,7 @@
     @apply flex my-1 mx-1 flex-wrap;
   }
   .cell {
-    @apply inline-flex justify-center items-center w-1/7 h-5 text-center p-1;
+    @apply inline-flex justify-center items-center w-1/7 h-8 text-center p-1;
   }
   .selected {
     @apply bg-primary-500 text-gray-500;
