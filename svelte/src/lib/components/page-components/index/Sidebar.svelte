@@ -26,7 +26,7 @@
         <header><h2>Filters</h2></header>
         <label>
             Dataset:
-            <Select options={availableDatasets} handleChange={handleSelectDataset}/>
+            <Select options={availableDatasets} on:change={handleSelectDataset}/>
         </label>
         
     </div>
