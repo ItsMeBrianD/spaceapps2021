@@ -86,7 +86,7 @@
     @apply relative;
   }
   input {
-    @apply bg-light-gray-500 text-primary-500 w-full py-1 px-2 my-2;
+    @apply bg-light-gray-500 text-primary-500 w-full py-1 px-2 my-2 outline-none focus:bg-light-gray-600;
   }
   .box {
     @apply absolute top-10 left-0 border-2 border-primary-500 inline-block;
