@@ -1,4 +1,5 @@
 <script lang="ts">
+    import {fly} from "svelte/transition";
     import {getContext} from "svelte";
 
     import {availableDatasets, ContextKeys} from "$lib/utils/constants";
@@ -6,9 +7,10 @@
     import type {TleStore} from "../../../state/TleStore";
     import {WorldWindModule} from "../../../utils/WorldWindModule";
     import {
-        currentTime, PlaybackManager, playing,
+        currentTime, PlaybackManager, playing, selectedObject,
 } from "../../../state/AppState";
     import {leftPad} from "../../../utils/time";
+    import ObjectInfo from "$lib/components/atoms/ObjectInfo.svelte";
     
 
 
@@ -60,7 +62,7 @@
         </label>
     </section>
 
-    <section>
+    <section class="flex-1">
         <header><h2>Controls</h2></header>
         <pre>As of {formattedTime} (local time)</pre>
         <div class="buttonRow">
@@ -75,11 +77,18 @@
         </button>
         <button class="w-full mt-2" on:click={() => PlaybackManager.setTime(Math.floor(new Date().getTime() / 1000))}>Reset to Now</button>
     </section>
+
+    {#if $selectedObject}
+        <section transition:fly={{y:50}}>
+            <header><h2>Selected Object</h2></header>
+            <ObjectInfo />
+        </section>
+    {/if}
 </aside>
 
 <style lang="postcss">
     aside {
-        @apply px-6 py-8;
+        @apply px-6 py-8 flex flex-col h-full;
     }
     img {
         @apply w-2/3 mx-auto mb-4;
