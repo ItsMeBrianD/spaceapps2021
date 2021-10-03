@@ -76,7 +76,8 @@ void loadObjs(uintptr_t address, int length) {
     std::string line2 = split.at(2);
 
     std::string id = line2.substr(2, 5);
-    db_tle(&line0[0], &line1[0], &line2[0], objPtr);
+    int x = db_tle(&line0[0], &line1[0], &line2[0], objPtr);
+   // std::cout << x << std::endl;
 
     objWithId.id = id;
     objWithId.obj = obj;

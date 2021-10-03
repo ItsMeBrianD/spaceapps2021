@@ -12,8 +12,8 @@
  */
 
 /* define this to use orbit's propagator
-#define USE_ORBIT_PROPAGATOR
  */
+#define USE_ORBIT_PROPAGATOR
 
 /* define this to print some stuff
 #define ESAT_TRACE
@@ -178,13 +178,13 @@ obj_earthsat (Now *np, Obj *op)
 	op->s_gaedec = (float) atan2 (SatZ, sqrt(SatX*SatX + SatY*SatY));
 
 	/* find topocentric from site location */
-	GetSitPosition(SiteLat,SiteLong,SiteAltitude,CrntTime,
-		    &SiteX,&SiteY,&SiteZ,&SiteVX,&SiteVY,SiteMatrix);
-	GetBearings(SatX,SatY,SatZ,SiteX,SiteY,SiteZ,SiteMatrix,
-		    &Azimuth,&Elevation);
+	//GetSitPosition(SiteLat,SiteLong,SiteAltitude,CrntTime,
+	//	    &SiteX,&SiteY,&SiteZ,&SiteVX,&SiteVY,SiteMatrix);
+	//GetBearings(SatX,SatY,SatZ,SiteX,SiteY,SiteZ,SiteMatrix,
+	//	    &Azimuth,&Elevation);
 
 	op->s_az = Azimuth;
-	refract (pressure, temp, Elevation, &dtmp);
+	//refract (pressure, temp, Elevation, &dtmp);
 	op->s_alt = dtmp;
 
 	/* Range: line-of-site distance to satellite, m
