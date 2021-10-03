@@ -110,6 +110,8 @@ class WWModule {
 
         // The common gesture-handling function.
         const handleClick = async recognizer => {
+            if (this.orbitLayer)
+                this.orbitLayer.removeAllRenderables();
             // Obtain the event location.
             const x = recognizer.clientX,
                   y = recognizer.clientY;
@@ -162,8 +164,6 @@ class WWModule {
                     if (!curr) return;
                     this.placemarks[curr.id].label = undefined;
                     this.placemarks[curr.id].highlighted = false;
-
-                    this.orbitLayer.removeAllRenderables();
 
                     return null;
                 });
