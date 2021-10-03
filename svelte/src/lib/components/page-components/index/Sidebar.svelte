@@ -51,7 +51,7 @@
     <header>
         <img src="/images/Full_Logo_Light.png" alt="Sprocket Orbital Tracker"/>
         <hr/>
-        <i>Press Shift+Space to pause/play</i><br/>
+        <i class="hidden lg:inline">Press Shift+Space to pause/play</i><br/>
         <i class="lg:hidden">Visualization is below filters</i>
     </header>
 
