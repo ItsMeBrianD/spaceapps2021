@@ -10,6 +10,8 @@ class WWModule {
 
     placemarks: Record<string, any> = {};
 
+    private orbitLayer;
+
     get redraw() {
         return this.worldWin.redraw.bind(this.worldWin);
     }
@@ -58,6 +60,7 @@ class WWModule {
 
         this.yeet = () => {
             objectsLayer.removeAllRenderables();
+            if (this.orbitLayer) this.orbitLayer.removeAllRenderables();
             this.placemarks = {};
         };
 
@@ -132,7 +135,7 @@ class WWModule {
 
                 // Show orbit
                 const period = (await fetch(`/api/satcat?catId=${properties.id}`).then(r => r.json())).PERIOD;
-                const timeArray = getTimeArray(currentTimeValue, period, 10);
+                const timeArray = getTimeArray(currentTimeValue, period, 100);
                 const readable = timeArray.map(ts => `${new Date(ts).toLocaleDateString()} ${new Date(ts).toLocaleTimeString()}`);
                 const positions = timeArray.map(time => this.store.getPosition(...millisToYMD(time), properties.id));
                 console.log(positions);
@@ -143,29 +146,25 @@ class WWModule {
                 path.followTerrain = false;
         
                 const pathAttributes = new ww.ShapeAttributes(null);
-                pathAttributes.outlineColor = ww.Color.BLUE;
-                pathAttributes.interiorColor = new ww.Color(0, 1, 1, 0.5);
+                pathAttributes.outlineColor = new ww.Color(0.850980392, 0.290196078, 0.701960784, 1);
                 pathAttributes.drawVerticals = path.extrude; // Draw verticals only when extruding.
                 path.attributes = pathAttributes;
-        
-                // Create and assign the path's highlight attributes.
-                const highlightAttributes = new ww.ShapeAttributes(pathAttributes);
-                highlightAttributes.outlineColor = ww.Color.RED;
-                highlightAttributes.interiorColor = new ww.Color(1, 1, 1, 0.5);
-                path.highlightAttributes = highlightAttributes;
-                
+                        
                 // Add the path to a layer and the layer to the WorldWindow's layer list.
-                const pathsLayer = new ww.RenderableLayer();
-                pathsLayer.displayName = "Paths";
-                pathsLayer.addRenderable(path);
+                this.orbitLayer = new ww.RenderableLayer();
+                this.orbitLayer.displayName = "Paths";
+                this.orbitLayer.addRenderable(path);
         
-                this.worldWin.addLayer(pathsLayer);
+                this.worldWin.addLayer(this.orbitLayer);
 
             } else {
                 selectedObject.update(curr => {
                     if (!curr) return;
                     this.placemarks[curr.id].label = undefined;
                     this.placemarks[curr.id].highlighted = false;
+
+                    this.orbitLayer.removeAllRenderables();
+
                     return null;
                 });
             }
