@@ -60,6 +60,7 @@ struct ObjWithId {
 std::vector<ObjWithId> OBJS;
 
 void loadObjs(uintptr_t address, int length) {
+  OBJS.clear();
   std::vector<std::string> tles = loadTLEs(address, length);
 
   for (int i = 0; i < tles.size(); i++) {
