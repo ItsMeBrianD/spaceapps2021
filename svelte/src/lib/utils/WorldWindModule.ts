@@ -71,7 +71,7 @@ class WWModule {
             {layer: new ww.StarFieldLayer(), enabled: true},
 
             // Orbital paths layer
-            {layer: pathsLayer, enabled: true},
+            // {layer: pathsLayer, enabled: true},
         ];
         layers.forEach(l => { this.worldWin.addLayer(l.layer) });
 
@@ -108,6 +108,7 @@ class WWModule {
                     placemark.highlightAttributes.imageScale = 0.8;
                     placemark.highlightAttributes.imageSource = "/images/pink.png";
                     placemark.highlightAttributes.drawLeaderLine = true;
+                    placemark.highlightAttributes.leaderLineAttributes.interiorColor = new ww.Color(0.960784314, 0.752941176, 0.305882353, 1);
                     
                     objectsLayer.addRenderable(placemark);
 
