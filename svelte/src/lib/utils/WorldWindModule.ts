@@ -26,6 +26,9 @@ class WWModule {
         
         const ww = await import("@nasaworldwind/worldwind");
 
+        ww.configuration.gpuCacheSize = 1000e6; // 500 MB
+
+
         this.ww = ww;
         this.worldWin = new ww.WorldWindow(c);
         window.map = this.worldWin;
