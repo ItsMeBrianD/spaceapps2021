@@ -10,9 +10,7 @@ import { WorldWindModule } from "../../utils/WorldWindModule";
 	let canvas: HTMLCanvasElement | undefined;
 	const wasmStore: TleStore = getContext(ContextKeys.WasmStore);
 
-	onMount(async () => {
-		WorldWindModule.init(canvas, wasmStore);
-	});
+	onMount(async () => WorldWindModule.init(canvas, wasmStore));
 	onDestroy(() => {
 	    
 	});

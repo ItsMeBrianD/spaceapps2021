@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {playing} from "../state/AppState";
+import {currentTime, playing} from "../state/AppState";
 import type {TleStore} from "../state/TleStore";
 import type {TleWasmModule} from "../state/TleWasmModule";
 
@@ -9,45 +9,18 @@ class WWModule {
 
     private unsubs: CallableFunction[] = [];
 
-    private interval;
-
     private placemarks: Record<string, any> = {};
     
     private ww: any;
 
     private worldWin: any;
 
-    private wasmModule: TleWasmModule;
 
     private store: TleStore;
 
-    
-
-    animate = (): void => {
-        this.store.getPositions(Math.floor(new Date().getTime() / 1000));
-    };
-
-    play = () => {
-        console.log("Playing");
-        this.interval = setInterval(this.animate, 1000);
-    };
-
-    pause = () => {
-        console.log("Pausing");
-        clearInterval(this.interval);
-        this.interval = undefined;
-    };
-
     init = async (c: HTMLCanvasElement, s: TleStore): Promise<void> => {
         this.store = s;
-        const wasmSub = s.subscribe(v => {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
-            if (v.loading === false) {
-                this.wasmModule = v.module;
-            }
-        });
-        this.unsubs.push(wasmSub);
-
+        
         const ww = await import("@nasaworldwind/worldwind");
         this.ww = ww;
         console.log(this.ww);
@@ -94,14 +67,9 @@ class WWModule {
         });
         this.unsubs.push(posSub);
 
-        const playingSub = playing.subscribe(v => {
-            if (v) {
-                this.play();
-            } else {
-                this.pause();
-            }
-        });
-        this.unsubs.push(playingSub);
+        const timeChangedSub = currentTime.subscribe(time => this.store.getPositions(Math.floor(time)));
+        console.log(timeChangedSub);
+        this.unsubs.push(timeChangedSub);
     };
 
     destroy = (): void => {

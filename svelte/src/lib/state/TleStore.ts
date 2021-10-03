@@ -79,7 +79,8 @@ export class TleStore implements Readable<TleStoreState> {
     getPositions(timestamp: number): TleOutput[] {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
         if (this.state.loading === true) throw new Error("Wait for Module Initialization before loading TLEs");
-
+        // console.log(timestamp);
+        // console.trace();
         const output = [];
         const positions = this.state.module.getPositions(timestamp);
         for (let i = 0;i < positions.size();i++) {
@@ -92,7 +93,8 @@ export class TleStore implements Readable<TleStoreState> {
             });
         }
         this._positions.set(output);
-        return output;
+        positions.delete();
+        return output as TleOutput[];
 
     }
 
