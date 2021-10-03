@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import wasm from "$lib/wasm/wasm";
 import {currentTime, selectedObject} from "../state/AppState";
 import type {TleStore} from "../state/TleStore";
-import { millisToYMD } from "./date-time";
+import { getTimeArray, millisToYMD } from "./date-time";
 
 class WWModule {
     yeet: CallableFunction;
@@ -22,6 +23,9 @@ class WWModule {
 
 
     init = async (c: HTMLCanvasElement, s: TleStore): Promise<void> => {
+        let currentTimeValue;
+        
+
         this.store = s;
         
         const ww = await import("@nasaworldwind/worldwind");
@@ -35,35 +39,6 @@ class WWModule {
 
 
 
-        // Drawing paths
-        const pathPositions = [];
-        const alt = 10000000;
-        const numPoints = 10;
-        for (let i = 0;i < numPoints + 1;i++) {
-            const long = 360 / numPoints * i;
-            pathPositions.push(new ww.Position(0, long, alt));
-        }
-
-        const path = new ww.Path(pathPositions, null);
-        path.altitudeMode = ww.RELATIVE_TO_GROUND; // The path's altitude stays relative to the terrain's altitude.
-        path.followTerrain = false;
-
-        const pathAttributes = new ww.ShapeAttributes(null);
-        pathAttributes.outlineColor = ww.Color.BLUE;
-        pathAttributes.interiorColor = new ww.Color(0, 1, 1, 0.5);
-        pathAttributes.drawVerticals = path.extrude; // Draw verticals only when extruding.
-        path.attributes = pathAttributes;
-
-        // Create and assign the path's highlight attributes.
-        const highlightAttributes = new ww.ShapeAttributes(pathAttributes);
-        highlightAttributes.outlineColor = ww.Color.RED;
-        highlightAttributes.interiorColor = new ww.Color(1, 1, 1, 0.5);
-        path.highlightAttributes = highlightAttributes;
-        
-        // Add the path to a layer and the layer to the WorldWindow's layer list.
-        const pathsLayer = new ww.RenderableLayer();
-        pathsLayer.displayName = "Paths";
-        pathsLayer.addRenderable(path);
 
         const layers = [
             // Imagery layers.
@@ -72,9 +47,6 @@ class WWModule {
             {layer: new ww.AtmosphereLayer(), enabled: true},
             // ww UI layers.
             {layer: new ww.StarFieldLayer(), enabled: true},
-
-            // Orbital paths layer
-            // {layer: pathsLayer, enabled: true},
         ];
         layers.forEach(l => { this.worldWin.addLayer(l.layer) });
 
@@ -131,7 +103,7 @@ class WWModule {
         this.unsubs.push(posSub);
 
         // The common gesture-handling function.
-        const handleClick = recognizer => {
+        const handleClick = async recognizer => {
             // Obtain the event location.
             const x = recognizer.clientX,
                   y = recognizer.clientY;
@@ -152,6 +124,40 @@ class WWModule {
                     }
                     return properties;
                 });
+
+
+
+                // Show orbit
+                const period = (await fetch(`/api/satcat?catId=${properties.id}`).then(r => r.json())).PERIOD;
+                const timeArray = getTimeArray(currentTimeValue, period, 10);
+                const readable = timeArray.map(ts => `${new Date(ts).toLocaleDateString()} ${new Date(ts).toLocaleTimeString()}`);
+                const positions = timeArray.map(time => this.store.getPosition(...millisToYMD(time), properties.id));
+                console.log(positions);
+                const pathPositions = positions.map(pos => new ww.Position(pos.lat, pos.long, pos.alt));
+        
+                const path = new ww.Path(pathPositions, null);
+                path.altitudeMode = ww.RELATIVE_TO_GROUND; // The path's altitude stays relative to the terrain's altitude.
+                path.followTerrain = false;
+        
+                const pathAttributes = new ww.ShapeAttributes(null);
+                pathAttributes.outlineColor = ww.Color.BLUE;
+                pathAttributes.interiorColor = new ww.Color(0, 1, 1, 0.5);
+                pathAttributes.drawVerticals = path.extrude; // Draw verticals only when extruding.
+                path.attributes = pathAttributes;
+        
+                // Create and assign the path's highlight attributes.
+                const highlightAttributes = new ww.ShapeAttributes(pathAttributes);
+                highlightAttributes.outlineColor = ww.Color.RED;
+                highlightAttributes.interiorColor = new ww.Color(1, 1, 1, 0.5);
+                path.highlightAttributes = highlightAttributes;
+                
+                // Add the path to a layer and the layer to the WorldWindow's layer list.
+                const pathsLayer = new ww.RenderableLayer();
+                pathsLayer.displayName = "Paths";
+                pathsLayer.addRenderable(path);
+        
+                this.worldWin.addLayer(pathsLayer);
+
             } else {
                 selectedObject.update(curr => {
                     if (!curr) return;
@@ -163,14 +169,13 @@ class WWModule {
             
             this.worldWin.redraw();
         };
-
-        // Listen for mouse clicks.
         const clickRecognizer = new ww.ClickRecognizer(this.worldWin, handleClick);
-
-        // Listen for taps on mobile devices.
         const tapRecognizer = new ww.TapRecognizer(this.worldWin, handleClick);
 
-        const timeChangedSub = currentTime.subscribe(time => this.store.getPositions(...millisToYMD(time)));
+        const timeChangedSub = currentTime.subscribe(time => {
+            currentTimeValue = time;
+            this.store.getPositions(...millisToYMD(time))
+        });
         this.unsubs.push(timeChangedSub);
     };
 
