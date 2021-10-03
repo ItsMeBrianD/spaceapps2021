@@ -13,11 +13,11 @@
     import ObjectInfo from "$lib/components/atoms/ObjectInfo.svelte";
     import DatePicker from "$lib/components/atoms/DatePicker.svelte";
     
-
-
     const wasm: TleStore = getContext(ContextKeys.WasmStore);
 
     async function handleSelectDataset(e) {
+        selectedObject.set(null);
+
         // This one's for you Zach
         WorldWindModule.yeet();
 

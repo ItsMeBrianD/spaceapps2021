@@ -13,6 +13,15 @@
 
     const formatLatLong = x => `${x > 0 ? "+" : ""}${x.toFixed(3)}`;
     const formatAlt = x => (x/1000).toFixed(3);
+    const objectTypeToString = abbr => {
+        switch (abbr) {
+            case "PAY": return "Payload";
+            case "DEB": return "Debris";
+            case "R/B": return "Rocket Body";
+            case "UNK": return "Unknown";
+            default: return abbr;
+        }
+    }
 </script>
 
 
@@ -29,7 +38,7 @@
             </tr>
             <tr>
                 <th>Object Type</th>
-                <td>{cat.OBJECT_TYPE}</td>
+                <td>{objectTypeToString(cat.OBJECT_TYPE)}</td>
             </tr>
             <tr>
                 <th>Owner</th>
