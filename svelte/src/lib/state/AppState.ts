@@ -1,6 +1,6 @@
 import {writable} from "svelte/store";
 
-const initialTime = Math.floor(new Date().getTime() / 1000);
+const initialTime = new Date().getTime();
 
 export const playing = writable<boolean>(false);
 
@@ -20,6 +20,8 @@ class PBManager {
 
     increment: number = 1;
 
+    framesPerSecond: number = 2;
+
     private _val = initialTime;
     
     private _interval;
@@ -29,10 +31,10 @@ class PBManager {
             if (v) {
                 // Play
                 this._interval = setInterval(() => {
-                    const newTime = this._val + this.increment;
+                    const newTime = this._val + (this.increment * 1000)/this.framesPerSecond;
                     currentTime.set(newTime);
                     this._val = newTime;
-                }, 1000);
+                }, 1000 / this.framesPerSecond);
             } else {
                 // Pause
                 clearInterval(this._interval);

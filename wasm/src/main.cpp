@@ -86,17 +86,12 @@ void loadObjs(uintptr_t address, int length) {
   }
 }
 
-std::vector<std::vector<std::string>> getPositions(long timestamp) {
+std::vector<std::vector<std::string>> getPositions(int year, int month, float day) {
   std::vector<std::vector<std::string>> out(OBJS.size());
 
   // Get current time
   Now now, *np = &now;
   memset(np, 0, sizeof(*np));
-  time_t t = (time_t) timestamp;
-  struct tm * timeStruct = gmtime(&t);
-  int year = timeStruct->tm_year + 1900;
-  int month = timeStruct->tm_mon + 1;
-  float day = timeStruct->tm_mday + (timeStruct->tm_hour/24.0) + (timeStruct->tm_min/(60.0*24.0)) + (timeStruct->tm_sec/(60.0*60.0*24.0));
 	cal_mjd(month, day, year, &mjd);
 
   // Compute position of each object

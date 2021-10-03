@@ -24,7 +24,7 @@
       const secPerMonth = 30*24 *60 *60;
       start = new Date();
       //console.log(Math.floor(start.getTime()/1000) + secPerMonth*i);
-      retVector = wasm.getPositions(Math.floor(start.getTime()/1000));// + secPerMonth*i);
+      retVector = wasm.getPositions(start.getTime());// + secPerMonth*i);
       end = new Date();
       elapsed = end.getTime() - start.getTime();
       console.log(`CALC: ${elapsed}ms to calculate ${retVector.size()} positions`);
