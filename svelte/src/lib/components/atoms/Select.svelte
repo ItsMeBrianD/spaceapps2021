@@ -48,6 +48,6 @@
 
 <style lang="postcss">
     select {
-        @apply text-gray-100 bg-gray-800 select-none cursor-pointer;
+        @apply text-primary-500 bg-light-gray-500 select-none cursor-pointer;
     }
 </style>

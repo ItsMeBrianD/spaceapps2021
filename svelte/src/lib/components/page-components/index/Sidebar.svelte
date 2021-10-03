@@ -73,14 +73,20 @@
             <button on:click={() => updateIncrement(1)}>+</button>
             <button on:click={() => updateIncrement(2)}>++</button>
         </div>
-        <button on:click={() => { $playing = !$playing }} class="play">
-            {$playing ? "Pause" : "Play"}
-        </button>
-        <button class="w-full mt-2" on:click={() => PlaybackManager.setTime(Math.floor(new Date().getTime() / 1000))}>Reset to Now</button>
+        <div class="buttonRow">
+            <button class="w-full mt-2" on:click={() => PlaybackManager.setTime(Math.floor(new Date().getTime() / 1000))}>Reset to Now</button>
+        </div>
+        <div class="buttonRow">
         <DatePicker
             on:datechange={(d) => PlaybackManager.setTime(d.detail / 1000)}
             selected={new Date($currentTime * 1000)}
         />
+    </div>
+    <div class="buttonRow">
+        <button on:click={() => { $playing = !$playing }} class="play">
+            {$playing ? "Pause" : "Play"}
+        </button>
+    </div>
         
     </section>
 
@@ -135,6 +141,6 @@
         @apply flex-1;
     }
     button.play {
-        @apply w-full bg-green-500 active:bg-green-700 hover:bg-green-600;
+        @apply w-full bg-secondary-400 active:bg-secondary-600 hover:bg-secondary-500;
     }
 </style>

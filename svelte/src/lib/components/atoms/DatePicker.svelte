@@ -1,4 +1,5 @@
 <script lang='ts'>
+  import {slide} from "svelte/transition";
   import { createEventDispatcher } from "svelte";
   import { getMonthName } from "$lib/utils/date-time";
   import Calendar from "./Calendar.svelte"
@@ -60,7 +61,7 @@
 <div class="-relative" bind:this={el}>
   <input type="text" on:focus={onFocus} value={selected.toDateString()} />
   {#if showDatePicker}
-    <div class="box">
+    <div class="box" transition:slide>
       <div class="month-name">
         <div class="center">
           <button on:click={prev}>Prev</button>
@@ -83,13 +84,13 @@
 
 <style lang="postcss">
   .-relative {
-    @apply relative;
+    @apply relative w-full;
   }
   input {
     @apply bg-light-gray-500 text-primary-500 w-full py-1 px-2 my-2 outline-none focus:bg-light-gray-600;
   }
   .box {
-    @apply absolute top-10 left-0 border-2 border-primary-500 inline-block;
+    @apply absolute top-10 left-0 border-2 border-primary-500 inline-block bg-light-gray-700 pt-2;
   }
   .month-name {
     @apply flex justify-around items-center my-2 mx-0;
