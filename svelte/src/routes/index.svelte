@@ -27,10 +27,3 @@
 	{/if}
 	<Sidebar slot="aside"/>
 </DefaultLayout>
-
-
-<style lang="postcss">
-	div {
-		@apply absolute bottom-20;
-	}
-</style>
