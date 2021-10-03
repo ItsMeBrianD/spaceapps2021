@@ -1247,7 +1247,7 @@ function isFileURI(filename) {
 
 // end include: URIUtils.js
 var wasmBinaryFile;
-  wasmBinaryFile = 'wasm.wasm';
+  wasmBinaryFile = '/wasm.wasm';
   if (!isDataURI(wasmBinaryFile)) {
     wasmBinaryFile = locateFile(wasmBinaryFile);
   }

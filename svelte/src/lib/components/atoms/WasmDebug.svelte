@@ -2,7 +2,7 @@
   import {ContextKeys} from "$lib/utils/constants";
   import {getContext} from "svelte";
 
-  const wasm = getContext(ContextKeys.WasmStore).wasmMod;
+  const {wasmMod: wasm} = getContext(ContextKeys.WasmStore);
 
   async function render() {
     const tles = await fetch("/norad/iss.txt").then(async r => r.text());
