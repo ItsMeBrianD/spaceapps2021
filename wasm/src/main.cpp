@@ -57,7 +57,7 @@ struct ObjWithId {
   Obj obj;
 };
 
-std::vector<ObjWithId> OBJS;
+std::map<std::string,ObjWithId> OBJS;
 
 void loadObjs(uintptr_t address, int length) {
   OBJS.clear();
@@ -82,7 +82,7 @@ void loadObjs(uintptr_t address, int length) {
     objWithId.id = id;
     objWithId.obj = obj;
 
-    OBJS.push_back(objWithId);
+    OBJS[id]=objWithId;
   }
 }
 
@@ -95,8 +95,10 @@ std::vector<std::vector<std::string>> getPositions(int year, int month, float da
 	cal_mjd(month, day, year, &mjd);
 
   // Compute position of each object
-  for (int i = 0; i < OBJS.size(); i++) {
-    ObjWithId objWithId = OBJS[i];
+  int i = 0;
+  for (std::map<std::string, ObjWithId>::iterator it = OBJS.begin(); it != OBJS.end(); ++it)
+  {
+    ObjWithId objWithId = it->second;
     (void)obj_earthsat(np, &(objWithId.obj));
 
     std::vector<std::string> info {
@@ -106,10 +108,35 @@ std::vector<std::vector<std::string>> getPositions(int year, int month, float da
       std::to_string(raddeg(objWithId.obj.es.ess_sublng))
     };
     out.at(i) = info;
+    i++;
   }
 
   return out;
 }
+
+
+
+std::vector<std::string> getPosition(int year, int month, float day, std::string id) {
+  // Get current time
+  Now now, *np = &now;
+  memset(np, 0, sizeof(*np));
+	cal_mjd(month, day, year, &mjd);
+
+
+  ObjWithId objWithId = OBJS[id];
+  (void)obj_earthsat(np, &(objWithId.obj));
+
+  std::vector<std::string> info {
+    objWithId.id,
+    std::to_string(objWithId.obj.es.ess_elev),
+    std::to_string(raddeg(objWithId.obj.es.ess_sublat)),
+    std::to_string(raddeg(objWithId.obj.es.ess_sublng))
+  };
+  
+
+  return info;
+}
+
 
 
 
@@ -217,6 +244,7 @@ EMSCRIPTEN_BINDINGS(my_module) {
   function("loadTLEs", &loadTLEs);
   function("loadObjs", &loadObjs);
   function("getPositions", &getPositions);
+  function("getPosition", &getPosition);
 
   register_vector<std::string>("VectorString");
   register_vector<std::vector<std::string>>("2DVectorString");

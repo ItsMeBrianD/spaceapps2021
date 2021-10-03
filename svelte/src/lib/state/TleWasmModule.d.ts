@@ -12,6 +12,7 @@ export interface TleWasmModule {
     loadTLEs(tlesAddress: number, length: number): any;
     loadObjs(address: number, length: number): any;
     getPositions(year: number, month: number, day: number): any;
+    getPosition(year: number, month: number, day: number, id:string): any;
     _malloc(x: number);
     
 }
