@@ -20,14 +20,53 @@ class WWModule {
         this.store = s;
         
         const ww = await import("@nasaworldwind/worldwind");
-        const RED = new ww.Color(255, 0, 0, 1);
-        const GREEN = new ww.Color(0, 255, 0, 1);
-
 
         this.ww = ww;
         console.log(this.ww);
         this.worldWin = new ww.WorldWindow(c);
         window.map = this.worldWin;
+
+
+
+
+
+
+
+        // Drawing paths
+        const pathPositions = [];
+        const alt = 10000000;
+        const numPoints = 10;
+        for (let i = 0; i < numPoints + 1; i++) {
+            const long = (360/numPoints)*i;
+            pathPositions.push(new ww.Position(0, long, alt));
+        }
+
+        var path = new ww.Path(pathPositions, null);
+        path.altitudeMode = ww.RELATIVE_TO_GROUND; // The path's altitude stays relative to the terrain's altitude.
+        path.followTerrain = false;
+
+        var pathAttributes = new ww.ShapeAttributes(null);
+        pathAttributes.outlineColor = ww.Color.BLUE;
+        pathAttributes.interiorColor = new ww.Color(0, 1, 1, 0.5);
+        pathAttributes.drawVerticals = path.extrude; //Draw verticals only when extruding.
+        path.attributes = pathAttributes;
+
+        // Create and assign the path's highlight attributes.
+        var highlightAttributes = new ww.ShapeAttributes(pathAttributes);
+        highlightAttributes.outlineColor = ww.Color.RED;
+        highlightAttributes.interiorColor = new ww.Color(1, 1, 1, 0.5);
+        path.highlightAttributes = highlightAttributes;
+        
+        // Add the path to a layer and the layer to the WorldWindow's layer list.
+        var pathsLayer = new ww.RenderableLayer();
+        pathsLayer.displayName = "Paths";
+        pathsLayer.addRenderable(path);        
+
+
+
+
+
+
 
         const layers = [
             // Imagery layers.
@@ -36,6 +75,9 @@ class WWModule {
             {layer: new ww.AtmosphereLayer(), enabled: true},
             // ww UI layers.
             {layer: new ww.StarFieldLayer(), enabled: true},
+
+            // Orbital paths layer
+            // {layer: pathsLayer, enabled: true},
         ];
         layers.forEach(l => { this.worldWin.addLayer(l.layer) });
 
@@ -65,8 +107,8 @@ class WWModule {
 
                     const placemark = new ww.Placemark(position);
                     placemark.userProperties = properties;
-                    placemark.attributes.imageScale = 5;
-                    placemark.attributes.imageColor = RED;
+                    placemark.attributes.imageScale = 0.6;
+                    placemark.attributes.imageSource = "/images/yellow.png";
                     
                     objectsLayer.addRenderable(placemark);
 
@@ -98,10 +140,11 @@ class WWModule {
             // If more than one object clicked, top of the array is top object clicked, if its not terrain it is an object
             if (!pickList.objects[0]?.isTerrain) {
                 const properties = pickList.objects[0].userObject.userProperties;
-                this.placemarks[properties.id].attributes.imageColor = GREEN;
+                this.placemarks[properties.id].attributes.imageSource = "/images/pink.png";
+
                 selectedObject.update(curr => {
                     if (curr) {
-                        this.placemarks[curr.id].attributes.imageColor = RED;
+                        this.placemarks[curr.id].attributes.imageSource = "/images/yellow.png";
                     }
                     return properties;
                 });
@@ -109,7 +152,7 @@ class WWModule {
             } else {
                 selectedObject.update((curr) => {
                     if (!curr) return;
-                    this.placemarks[curr.id].attributes.imageColor = RED;
+                    this.placemarks[curr.id].attributes.imageSource = "/images/yellow.png";
                     return null;
                 });
             }
@@ -121,6 +164,15 @@ class WWModule {
 
         // Listen for taps on mobile devices.
         const tapRecognizer = new ww.TapRecognizer(this.worldWin, handleClick);
+
+
+
+
+
+
+
+
+
 
         const timeChangedSub = currentTime.subscribe(time => this.store.getPositions(Math.floor(time)));
         console.log(timeChangedSub);
