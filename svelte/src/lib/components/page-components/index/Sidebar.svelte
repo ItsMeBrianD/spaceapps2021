@@ -78,7 +78,7 @@
         <pre>Skip To</pre>
         <div class="buttonRow">
         <DatePicker
-            on:datechange={(d) => PlaybackManager.setTime(d.detail)}
+            on:datechange={(d) => PlaybackManager.setTime(Math.floor(d.detail / 1000))}
             selected={new Date($currentTime)}
         />    
         </div>
