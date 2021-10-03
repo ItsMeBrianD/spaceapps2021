@@ -12,18 +12,50 @@
     const formatAlt = x => (x/1000).toFixed(3);
 </script>
 
-{#if $selectedObject}
+
+{#if cat}
     <table>
         <tr>
             <th>Catalog Number</th>
-            <td>{$selectedObject.id}</td>
+            <td>{$selectedObject ? $selectedObject.id : ""}</td>
         </tr>
         {#if cat}
             <tr>
                 <th>Name</th>
                 <td>{cat.SATNAME}</td>
             </tr>
+            <tr>
+                <th>Object Type</th>
+                <td>{cat.OBJECT_TYPE}</td>
+            </tr>
+            <tr>
+                <th>Country</th>
+                <td>{cat.COUNTRY}</td>
+            </tr>
+            <tr>
+                <th>Launch Date</th>
+                <td>{cat.LAUNCH}</td>
+            </tr>
+            <tr>
+                <th>Launch Site</th>
+                <td>{cat.SITE}</td>
+            </tr>
+            <tr>
+                <th>Apogee</th>
+                <td>{cat.APOGEE}</td>
+            </tr>
+            <tr>
+                <th>Perigee</th>
+                <td>{cat.PERIGEE}</td>
+            </tr>
         {/if}
+    </table>
+{/if}
+
+<br />
+
+{#if $selectedObject}
+    <table>
         <tr>
             <th>Latitude</th>
             <td>{formatLatLong($selectedObject.lat)}°</td>
@@ -38,7 +70,6 @@
         </tr>
     </table>
 {/if}
-
 
 
 <style lang="postcss">
