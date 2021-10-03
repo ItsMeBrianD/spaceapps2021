@@ -22,7 +22,7 @@
 
   // handlers
   const onFocus = () => {
-    showDatePicker = true;
+    showDatePicker = !showDatePicker;
   };
 
   const next = () => {
@@ -87,7 +87,7 @@
     @apply relative w-full;
   }
   span {
-    @apply block bg-light-gray-500 text-primary-500 w-full py-2 px-2 outline-none focus:bg-light-gray-600 cursor-pointer select-none;
+    @apply block bg-light-gray-500 text-primary-500 w-full py-2 px-4 lg:px-2 lg:py-1 outline-none focus:bg-light-gray-600 cursor-pointer select-none;
   }
   .box {
     @apply absolute top-10 left-0 border-2 border-primary-500 inline-block bg-light-gray-700 pt-2;

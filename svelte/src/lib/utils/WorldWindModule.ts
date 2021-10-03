@@ -3,6 +3,7 @@ import wasm from "$lib/wasm/wasm";
 import {currentTime, selectedObject} from "../state/AppState";
 import type {TleStore} from "../state/TleStore";
 import { getTimeArray, millisToYMD } from "./date-time";
+import { shim } from "./WorldWindShim";
 
 class WWModule {
     yeet: CallableFunction;
@@ -29,6 +30,8 @@ class WWModule {
         this.store = s;
         
         const ww = await import("@nasaworldwind/worldwind");
+
+        shim(ww);
 
         ww.configuration.gpuCacheSize = 1000e6; // 500 MB
 

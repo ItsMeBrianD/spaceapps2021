@@ -52,14 +52,13 @@
     <header>
         <img src="/images/Full_Logo_Light.png" alt="Sprocket Orbital Tracker"/>
         <hr/>
-        <i class="hidden lg:inline">Press Shift+Space to pause/play</i><br/>
-        <i class="lg:hidden">Visualization is below filters</i>
+        <pre class="lg:hidden">Visualization is below filters</pre>
     </header>
 
     <section>
         <header><h2>Filters</h2></header>
         <label>
-            Dataset:
+            <pre>Dataset:</pre>
             <Select options={availableDatasets} on:change={handleSelectDataset}/>
         </label>
     </section>
@@ -80,10 +79,10 @@
         <DatePicker
             on:datechange={(d) => PlaybackManager.setTime(d.detail.getTime())}
             selected={new Date($currentTime)}
-        />    
+        />  <button class="w-full" on:click={() => PlaybackManager.setTime(new Date().getTime())}>Reset</button>  
         </div>
         <div class="buttonRow">
-            <button class="w-full mt-2" on:click={() => PlaybackManager.setTime(new Date().getTime())}>Reset to Now</button>
+            
         </div>
     
         <pre>As of {formattedTime} (local time)</pre>
