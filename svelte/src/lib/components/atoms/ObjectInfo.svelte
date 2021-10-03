@@ -4,6 +4,7 @@
     let cat;
     const getCatInfo = async () => {
         cat = await fetch(`/api/satcat?catId=${$selectedObject.id}`).then(r => r.json());
+        console.log(cat);
     }
 
     if ($selectedObject) {
@@ -24,23 +25,23 @@
         {#if cat}
             <tr>
                 <th>Name</th>
-                <td>{cat.SATNAME}</td>
+                <td>{cat.OBJECT_NAME}</td>
             </tr>
             <tr>
                 <th>Object Type</th>
                 <td>{cat.OBJECT_TYPE}</td>
             </tr>
             <tr>
-                <th>Country</th>
-                <td>{cat.COUNTRY}</td>
+                <th>Owner</th>
+                <td>{cat.OWNER}</td>
             </tr>
             <tr>
                 <th>Launch Date</th>
-                <td>{cat.LAUNCH}</td>
+                <td>{cat.LAUNCH_DATE}</td>
             </tr>
             <tr>
                 <th>Launch Site</th>
-                <td>{cat.SITE}</td>
+                <td>{cat.LAUNCH_SITE}</td>
             </tr>
             <tr>
                 <th>Apogee</th>
@@ -49,6 +50,10 @@
             <tr>
                 <th>Perigee</th>
                 <td>{cat.PERIGEE}</td>
+            </tr>
+            <tr>
+                <th>Period</th>
+                <td>{cat.PERIOD}</td>
             </tr>
         {/if}
     </table>
