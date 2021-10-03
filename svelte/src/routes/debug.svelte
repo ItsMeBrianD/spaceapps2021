@@ -5,7 +5,7 @@
 	import {ContextKeys} from "$lib/utils/constants";
 	import Spinner from "$lib/components/atoms/Spinner.svelte";
 	import { readable } from "svelte/store";
-import WasmDebug from "$lib/components/atoms/WasmDebug.svelte";
+	import WasmDebug from "$lib/components/atoms/WasmDebug.svelte";
 
 	
 	let store;
