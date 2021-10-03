@@ -1,6 +1,13 @@
 <script lang="ts">
     import { selectedObject } from "$lib/state/AppState";
 
+    import satcat from "../../../../static/norad/satcat.json";
+
+    let cat;
+    if ($selectedObject) {
+        cat = satcat.find(x => parseInt(x.NORAD_CAT_ID) === parseInt($selectedObject.id));
+    }
+
     const formatLatLong = x => `${x > 0 ? "+" : ""}${x.toFixed(3)}`;
     const formatAlt = x => (x/1000).toFixed(3);
 </script>
@@ -11,6 +18,12 @@
             <th>Catalog Number</th>
             <td>{$selectedObject.id}</td>
         </tr>
+        {#if cat}
+            <tr>
+                <th>Name</th>
+                <td>{cat.SATNAME}</td>
+            </tr>
+        {/if}
         <tr>
             <th>Latitude</th>
             <td>{formatLatLong($selectedObject.lat)}°</td>
