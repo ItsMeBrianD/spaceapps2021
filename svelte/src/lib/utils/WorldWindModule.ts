@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {currentTime, selectedObject} from "../state/AppState";
 import type {TleStore} from "../state/TleStore";
-import { millisToYMD } from "./date-time";
+import {millisToYMD} from "./date-time";
+import {shim} from "./WorldWindShim";
 
 class WWModule {
     yeet: CallableFunction;
@@ -25,6 +26,8 @@ class WWModule {
         this.store = s;
         
         const ww = await import("@nasaworldwind/worldwind");
+
+        shim(ww);
 
         ww.configuration.gpuCacheSize = 1000e6; // 500 MB
 
@@ -74,7 +77,7 @@ class WWModule {
             {layer: new ww.StarFieldLayer(), enabled: true},
 
             // Orbital paths layer
-            // {layer: pathsLayer, enabled: true},
+            {layer: pathsLayer, enabled: true},
         ];
         layers.forEach(l => { this.worldWin.addLayer(l.layer) });
 
