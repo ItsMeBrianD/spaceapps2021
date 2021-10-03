@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {currentTime, playing} from "../state/AppState";
+import {currentTime} from "../state/AppState";
 import type {TleStore} from "../state/TleStore";
-import type {TleWasmModule} from "../state/TleWasmModule";
 
 class WWModule {
     yeet: CallableFunction;

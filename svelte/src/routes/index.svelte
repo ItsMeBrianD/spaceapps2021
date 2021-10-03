@@ -7,14 +7,14 @@
 	import DefaultLayout from "$lib/components/layouts/DefaultLayout.svelte";
 	import Sidebar from "$lib/components/page-components/index/Sidebar.svelte";
 	import Spinner from "$lib/components/atoms/Spinner.svelte";
-	import { readable } from "svelte/store";
+	import {readable} from "svelte/store";
 	
 	let store;
 	if (browser) {
-		store = new TleStore();
-		setContext(ContextKeys.WasmStore, store);
+	    store = new TleStore();
+	    setContext(ContextKeys.WasmStore, store);
 	} else {
-		store = readable({loading: true});
+	    store = readable({loading: true});
 	}
 </script>
 

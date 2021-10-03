@@ -3,9 +3,12 @@
 
     import {availableDatasets, ContextKeys} from "$lib/utils/constants";
     import Select from "$lib/components/atoms/Select.svelte";
-    import type { TleStore } from "../../../state/TleStore";
-    import { WorldWindModule } from "../../../utils/WorldWindModule";
-    import { currentTime, Increment, PlaybackManager, playing } from "../../../state/AppState";
+    import type {TleStore} from "../../../state/TleStore";
+    import {WorldWindModule} from "../../../utils/WorldWindModule";
+    import {
+        currentTime, Increment, PlaybackManager, playing,
+} from "../../../state/AppState";
+    import {leftPad} from "../../../utils/time";
     
 
 
@@ -32,9 +35,9 @@
     }
 
     let formattedTime;
-    $: if($currentTime) {
+    $: if ($currentTime) {
         const date = new Date($currentTime * 1000);
-        formattedTime = `${date.getFullYear()}${date.getMonth()+1}${date.getDay()} @ ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+        formattedTime = `${leftPad(date.getFullYear())}${leftPad(date.getMonth() + 1)}${leftPad(date.getDate())} @ ${leftPad(date.getHours())}:${leftPad(date.getMinutes())}:${leftPad(date.getSeconds())}`;
     }
 </script>
 
@@ -57,15 +60,16 @@
         <header><h2>Controls</h2></header>
         <pre>As of {formattedTime} (local time)</pre>
         <div class="buttonRow">
-            <button class:active={PlaybackManager.increment === Increment.SLOWER} on:click={() => updateIncrement(Increment.SLOWER)}>Slower</button>
-            <button class:active={PlaybackManager.increment === Increment.SLOW} on:click={() => updateIncrement(Increment.SLOW)}>Slow</button>
-            <button class:active={PlaybackManager.increment === Increment.REAL_TIME} on:click={() => updateIncrement(Increment.REAL_TIME)}>Real Time</button>
-            <button class:active={PlaybackManager.increment === Increment.FAST} on:click={() => updateIncrement(Increment.FAST)}>Fast</button>
-            <button class:active={PlaybackManager.increment === Increment.FASTER} on:click={() => updateIncrement(Increment.FASTER)}>Faster</button>
+            <button class:active={PlaybackManager.increment === Increment.SLOWER} on:click={() => { updateIncrement(Increment.SLOWER) }}>Slower</button>
+            <button class:active={PlaybackManager.increment === Increment.SLOW} on:click={() => { updateIncrement(Increment.SLOW) }}>Slow</button>
+            <button class:active={PlaybackManager.increment === Increment.REAL_TIME} on:click={() => { updateIncrement(Increment.REAL_TIME) }}>Real Time</button>
+            <button class:active={PlaybackManager.increment === Increment.FAST} on:click={() => { updateIncrement(Increment.FAST) }}>Fast</button>
+            <button class:active={PlaybackManager.increment === Increment.FASTER} on:click={() => { updateIncrement(Increment.FASTER) }}>Faster</button>
         </div>
-        <button on:click={() => $playing = !$playing} class="play">
+        <button on:click={() => { $playing = !$playing }} class="play">
             {$playing ? "Pause" : "Play"}
         </button>
+        <button class="w-full mt-2" on:click={() => { $currentTime = Math.floor(new Date().getTime() / 1000) }}>Reset to Now</button>
     </section>
 </aside>
 

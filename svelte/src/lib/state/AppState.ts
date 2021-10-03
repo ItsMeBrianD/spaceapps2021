@@ -1,4 +1,4 @@
-import {readable, writable} from "svelte/store";
+import {writable} from "svelte/store";
 
 const initialTime = Math.floor(new Date().getTime() / 1000);
 
@@ -24,12 +24,10 @@ class PBManager {
 
     constructor() {
         playing.subscribe(v => {
-            console.log(v);
             if (v) {
                 // Play
                 this._interval = setInterval(() => {
                     const newTime = this._val + this.increment;
-                    console.log(newTime, this.increment);
                     currentTime.set(newTime);
                     this._val = newTime;
                 }, 1000);

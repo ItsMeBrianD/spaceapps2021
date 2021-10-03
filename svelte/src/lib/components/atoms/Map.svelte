@@ -1,12 +1,11 @@
 <script lang="ts">
-	import {getContext, onDestroy, onMount} from "svelte";
-import { playing } from "../../state/AppState";
-import type { TleStore } from "../../state/TleStore";
-import { ContextKeys } from "../../utils/constants";
-import { WorldWindModule } from "../../utils/WorldWindModule";
-	// import * as worldwind from "@nasaworldwind/worldwind";
-
-	let el: HTMLElement | undefined;
+	import {
+    getContext, onDestroy, onMount,
+} from "svelte";
+import {playing} from "../../state/AppState";
+import type {TleStore} from "../../state/TleStore";
+import {ContextKeys} from "../../utils/constants";
+import {WorldWindModule} from "../../utils/WorldWindModule";
 	let canvas: HTMLCanvasElement | undefined;
 	const wasmStore: TleStore = getContext(ContextKeys.WasmStore);
 
@@ -16,9 +15,9 @@ import { WorldWindModule } from "../../utils/WorldWindModule";
 	});
 
 	function handleKeyPress(e: KeyboardEvent) {
-		if (e.key === " " && e.getModifierState("Shift")) {
-			$playing = !$playing;
-		}
+	    if (e.key === " " && e.getModifierState("Shift")) {
+	        $playing = !$playing;
+	    }
 	}
 
 </script>

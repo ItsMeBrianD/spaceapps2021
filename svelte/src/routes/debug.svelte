@@ -4,16 +4,16 @@
 	import {TleStore} from "$lib/state/TleStore";
 	import {ContextKeys} from "$lib/utils/constants";
 	import Spinner from "$lib/components/atoms/Spinner.svelte";
-	import { readable } from "svelte/store";
+	import {readable} from "svelte/store";
 	import WasmDebug from "$lib/components/atoms/WasmDebug.svelte";
 
 	
 	let store;
 	if (browser) {
-		store = new TleStore();
-		setContext(ContextKeys.WasmStore, store);
+	    store = new TleStore();
+	    setContext(ContextKeys.WasmStore, store);
 	} else {
-		store = readable({loading: true});
+	    store = readable({loading: true});
 	}
 </script>
 

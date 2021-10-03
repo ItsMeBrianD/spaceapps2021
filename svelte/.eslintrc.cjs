@@ -424,7 +424,7 @@ module.exports = {
 	  "@typescript-eslint/no-confusing-void-expression": "error",                /* ( ft) Requires expressions of type void to appear in statement position */
 	  "@typescript-eslint/no-dynamic-delete": "error",                           /* ( f ) Disallow the delete operator with computed key expressions */
 	  "@typescript-eslint/no-empty-interface": "error",                          /* (rf ) Disallow the declaration of empty interfaces */
-	  "@typescript-eslint/no-explicit-any": "error",                             /* (rf ) Disallow usage of the any type */
+	  "@typescript-eslint/no-explicit-any": "off",                               /* (rf ) Disallow usage of the any type */
 	  "@typescript-eslint/no-extra-non-null-assertion": "error",                 /* (rf ) Disallow extra non-null assertion */
 	  "@typescript-eslint/no-extraneous-class": ["error", {                      /* (   ) Forbids the use of classes as namespaces */
 		"allowEmpty": true
