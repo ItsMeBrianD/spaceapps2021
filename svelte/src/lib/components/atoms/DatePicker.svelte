@@ -59,7 +59,7 @@
 <svelte:body on:click={handleBodyClick}/>
 
 <div class="-relative" bind:this={el}>
-  <input type="text" on:focus={onFocus} value={selected.toDateString()} />
+  <span on:click={onFocus}>{selected.toDateString()}</span>
   {#if showDatePicker}
     <div class="box" transition:slide>
       <div class="month-name">
@@ -86,8 +86,8 @@
   .-relative {
     @apply relative w-full;
   }
-  input {
-    @apply bg-light-gray-500 text-primary-500 w-full py-1 px-2 my-2 outline-none focus:bg-light-gray-600;
+  span {
+    @apply block bg-light-gray-500 text-primary-500 w-full py-1 px-2 my-2 outline-none focus:bg-light-gray-600 cursor-pointer select-none;
   }
   .box {
     @apply absolute top-10 left-0 border-2 border-primary-500 inline-block bg-light-gray-700 pt-2;

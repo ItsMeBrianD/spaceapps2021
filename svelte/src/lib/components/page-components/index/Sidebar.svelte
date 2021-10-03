@@ -100,7 +100,7 @@
 
 <style lang="postcss">
     aside {
-        @apply px-6 py-8 flex flex-col h-full;
+        @apply px-6 py-8 flex flex-col h-full select-none;
     }
     img {
         @apply w-1/2 mx-auto mb-4;
