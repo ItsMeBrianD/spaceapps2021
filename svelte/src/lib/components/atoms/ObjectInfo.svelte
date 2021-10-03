@@ -12,10 +12,16 @@
             cat = undefined;
         } else if (!cat || cat.NORAD_CAT_ID.toString() !== v.id) {
             loading = true;
-            cat = await fetch(`/api/satcat?catId=${v.id}`).then(r => r.json());
-            WorldWindModule.placemarks[v.id].label = cat.OBJECT_NAME;
+            cat = await fetch(`/api/satcat?catId=${v.id}`).then(r => {
+                if(r.ok) return r.json();
+                else return null;
+            });
+            if(cat) {
+                WorldWindModule.placemarks[v.id].label = cat.OBJECT_NAME;
+            }
             WorldWindModule.redraw();
             loading = false;
+
         }
     });
     onDestroy(unsub);
