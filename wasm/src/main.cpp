@@ -44,6 +44,7 @@ std::vector<std::string> bufferToTLEs(uintptr_t address, int length) {
       const char* cstr = tmp.c_str();
 
       out.push_back(cstr);
+      ss.str(std::string()); // clear stringstreams
       newLineCount = 0;
     }
   }
@@ -54,7 +55,7 @@ std::vector<std::string> bufferToTLEs(uintptr_t address, int length) {
 std::vector<std::vector<std::string>> getPositions(uintptr_t tlesAddress, int length) {
   std::vector<std::string> tles = bufferToTLEs(tlesAddress, length);
 
-  std::vector<std::vector<std::string>> out;
+  std::vector<std::vector<std::string>> out(tles.size());
 
   time_t t = time(0);
   struct tm * timeStruct = gmtime(&t);
@@ -80,13 +81,14 @@ std::vector<std::vector<std::string>> getPositions(uintptr_t tlesAddress, int le
     db_tle(&line0[0], &line1[0], &line2[0], op);
     (void)obj_earthsat(np, op);
 
-    std::vector<std::string> info;
     std::string id = line2.substr(2, 5);
-    info.push_back(id);
-    info.push_back(std::to_string(raddeg(obj.es.ess_sublat)));
-    info.push_back(std::to_string(raddeg(obj.es.ess_sublng)));
 
-    out.push_back(info);
+    std::vector<std::string> info {
+      id,
+      std::to_string(raddeg(obj.es.ess_sublat)),
+      std::to_string(raddeg(obj.es.ess_sublng))
+    };
+    out.at(i) = info;
   }
 
   return out;
