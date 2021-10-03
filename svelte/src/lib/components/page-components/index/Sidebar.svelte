@@ -11,6 +11,7 @@
 } from "../../../state/AppState";
     import {leftPad} from "../../../utils/time";
     import ObjectInfo from "$lib/components/atoms/ObjectInfo.svelte";
+    import DatePicker from "$lib/components/atoms/DatePicker.svelte";
     
 
 
@@ -76,6 +77,12 @@
             {$playing ? "Pause" : "Play"}
         </button>
         <button class="w-full mt-2" on:click={() => PlaybackManager.setTime(Math.floor(new Date().getTime() / 1000))}>Reset to Now</button>
+        <DatePicker
+            on:datechange={(d) => PlaybackManager.setTime(d.detail / 1000)}
+            selected={new Date($currentTime * 1000)}
+           
+        />
+        
     </section>
 
     {#if $selectedObject}
