@@ -111,7 +111,7 @@ class WWModule {
                     placemark.highlightAttributes.imageScale = 0.8;
                     placemark.highlightAttributes.imageSource = "/images/pink.png";
                     placemark.highlightAttributes.drawLeaderLine = true;
-                    placemark.highlightAttributes.leaderLineAttributes.interiorColor = new ww.Color(0.960784314, 0.752941176, 0.305882353, 1);
+                    placemark.highlightAttributes.leaderLineAttributes.outlineColor = new ww.Color(0.850980392, 0.290196078, 0.701960784, 1);
                     
                     objectsLayer.addRenderable(placemark);
 
