@@ -9,5 +9,5 @@ export interface TleWasmModule {
     hello(): string;
     loadTLEs(tlesAddress: number, length: number): any;
     loadObjs(address: number, length: number): any;
-    getPositions(tlesAddress: number, length: number): any;
+    getPositions(): any;
 }

@@ -61,10 +61,11 @@ std::vector<ObjWithId> OBJS;
 
 void loadObjs(uintptr_t address, int length) {
   std::vector<std::string> tles = loadTLEs(address, length);
-  OBJS.resize(tles.size());
 
-  for (int i = 0; i < OBJS.size(); i++) {
-    Obj *objPtr = &OBJS[i].obj;
+  for (int i = 0; i < tles.size(); i++) {
+    ObjWithId objWithId;
+
+    Obj obj, *objPtr = &obj;
     memset(objPtr, 0, sizeof(*objPtr));
 
     std::string s = tles.at(i);
@@ -74,13 +75,16 @@ void loadObjs(uintptr_t address, int length) {
     std::string line2 = split.at(2);
 
     std::string id = line2.substr(2, 5);
-    OBJS[i].id = id;
-
     db_tle(&line0[0], &line1[0], &line2[0], objPtr);
+
+    objWithId.id = id;
+    objWithId.obj = obj;
+
+    OBJS.push_back(objWithId);
   }
 }
 
-std::vector<std::vector<std::string>> getPositions(uintptr_t tlesAddress, int length) {
+std::vector<std::vector<std::string>> getPositions() {
   std::vector<std::vector<std::string>> out(OBJS.size());
 
   // Get current time

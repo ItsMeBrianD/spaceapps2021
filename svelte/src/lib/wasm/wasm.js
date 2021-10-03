@@ -1072,7 +1072,7 @@ function updateGlobalBufferAndViews(buf) {
 
 var TOTAL_STACK = 5242880;
 
-var INITIAL_MEMORY = Module['INITIAL_MEMORY'] || 16777216;
+var INITIAL_MEMORY = Module['INITIAL_MEMORY'] || 67108864;
 
 // include: runtime_init_table.js
 // In regular non-RELOCATABLE mode the table is exported
@@ -1423,7 +1423,7 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  
+  25016: function($0, $1) {if (typeof emscriptenMemoryProfiler !== 'undefined') emscriptenMemoryProfiler.onSbrkGrow($0, $1)}
 };
 
 
@@ -2720,6 +2720,8 @@ var ASM_CONSTS = {
               "throwBindingError('function "+humanName+" called with ' + arguments.length + ' arguments, expected "+(argCount - 2)+" args!');\n" +
           "}\n";
   
+      invokerFnBody += "Module.emscripten_trace_enter_context('embind::" + humanName + "');\n";
+  
       if (needsDestructorStack) {
           invokerFnBody +=
               "var destructors = [];\n";
@@ -2728,6 +2730,9 @@ var ASM_CONSTS = {
       var dtorStack = needsDestructorStack ? "destructors" : "null";
       var args1 = ["throwBindingError", "invoker", "fn", "runDestructors", "retType", "classParam"];
       var args2 = [throwBindingError, cppInvokerFunc, cppTargetFunc, runDestructors, argTypes[0], argTypes[1]];
+  
+      args1.push("Module");
+      args2.push(Module);
   
       if (isClassMethodFunc) {
           invokerFnBody += "var thisWired = classParam.toWireType("+dtorStack+", this);\n";
@@ -2761,8 +2766,10 @@ var ASM_CONSTS = {
   
       if (returns) {
           invokerFnBody += "var ret = retType.fromWireType(rv);\n" +
+                           "Module.emscripten_trace_exit_context();\n" +
                            "return ret;\n";
       } else {
+          invokerFnBody += "Module.emscripten_trace_exit_context();\n";
       }
   
       invokerFnBody += "}\n";
@@ -3257,6 +3264,28 @@ var ASM_CONSTS = {
       abort('');
     }
 
+  var readAsmConstArgsArray = [];
+  function readAsmConstArgs(sigPtr, buf) {
+      readAsmConstArgsArray.length = 0;
+      var ch;
+      // Most arguments are i32s, so shift the buffer pointer so it is a plain
+      // index into HEAP32.
+      buf >>= 2;
+      while (ch = HEAPU8[sigPtr++]) {
+        // A double takes two 32-bit slots, and must also be aligned - the backend
+        // will emit padding to avoid that.
+        var readAsmConstArgsDouble = ch < 105;
+        if (readAsmConstArgsDouble && (buf & 1)) buf++;
+        readAsmConstArgsArray.push(readAsmConstArgsDouble ? HEAPF64[buf++ >> 1] : HEAP32[buf]);
+        ++buf;
+      }
+      return readAsmConstArgsArray;
+    }
+  function _emscripten_asm_const_int(code, sigPtr, argbuf) {
+      var args = readAsmConstArgs(sigPtr, argbuf);
+      return ASM_CONSTS[code].apply(null, args);
+    }
+
   function _emscripten_memcpy_big(dest, src, num) {
       HEAPU8.copyWithin(dest, src, src + num);
     }
@@ -3268,6 +3297,156 @@ var ASM_CONSTS = {
       var oldSize = HEAPU8.length;
       requestedSize = requestedSize >>> 0;
       abortOnCannotGrowMemory(requestedSize);
+    }
+
+  function _emscripten_trace_js_configure(collector_url, application) {
+      EmscriptenTrace.configure(collector_url, application);
+    }
+  
+  function _emscripten_trace_configure_for_google_wtf() {
+      EmscriptenTrace.configureForGoogleWTF();
+    }
+  
+  function _emscripten_trace_js_enter_context(name) {
+      if (EmscriptenTrace.postEnabled) {
+        var now = EmscriptenTrace.now();
+        EmscriptenTrace.post([EmscriptenTrace.EVENT_ENTER_CONTEXT,
+                              now, name]);
+      }
+      if (EmscriptenTrace.googleWTFEnabled) {
+        EmscriptenTrace.googleWTFEnterScope(name);
+      }
+    }
+  
+  function _emscripten_trace_exit_context() {
+      if (EmscriptenTrace.postEnabled) {
+        var now = EmscriptenTrace.now();
+        EmscriptenTrace.post([EmscriptenTrace.EVENT_EXIT_CONTEXT, now]);
+      }
+      if (EmscriptenTrace.googleWTFEnabled) {
+        EmscriptenTrace.googleWTFExitScope();
+      }
+    }
+  
+  function _emscripten_trace_js_log_message(channel, message) {
+      if (EmscriptenTrace.postEnabled) {
+        var now = EmscriptenTrace.now();
+        EmscriptenTrace.post([EmscriptenTrace.EVENT_LOG_MESSAGE, now,
+                              channel, message]);
+      }
+    }
+  
+  function _emscripten_trace_js_mark(message) {
+      if (EmscriptenTrace.postEnabled) {
+        var now = EmscriptenTrace.now();
+        EmscriptenTrace.post([EmscriptenTrace.EVENT_LOG_MESSAGE, now,
+                              "MARK", message]);
+      }
+      if (EmscriptenTrace.googleWTFEnabled) {
+        window['wtf'].trace.mark(message);
+      }
+    }
+  
+  var _emscripten_get_now;if (ENVIRONMENT_IS_NODE) {
+    _emscripten_get_now = function() {
+      var t = process['hrtime']();
+      return t[0] * 1e3 + t[1] / 1e6;
+    };
+  } else _emscripten_get_now = function() { return performance.now(); }
+  ;
+  var EmscriptenTrace = {worker:null,collectorEnabled:false,googleWTFEnabled:false,testingEnabled:false,googleWTFData:{scopeStack:[],cachedScopes:{}},DATA_VERSION:1,EVENT_ALLOCATE:"allocate",EVENT_ANNOTATE_TYPE:"annotate-type",EVENT_APPLICATION_NAME:"application-name",EVENT_ASSOCIATE_STORAGE_SIZE:"associate-storage-size",EVENT_ENTER_CONTEXT:"enter-context",EVENT_EXIT_CONTEXT:"exit-context",EVENT_FRAME_END:"frame-end",EVENT_FRAME_RATE:"frame-rate",EVENT_FRAME_START:"frame-start",EVENT_FREE:"free",EVENT_LOG_MESSAGE:"log-message",EVENT_MEMORY_LAYOUT:"memory-layout",EVENT_OFF_HEAP:"off-heap",EVENT_REALLOCATE:"reallocate",EVENT_REPORT_ERROR:"report-error",EVENT_SESSION_NAME:"session-name",EVENT_TASK_ASSOCIATE_DATA:"task-associate-data",EVENT_TASK_END:"task-end",EVENT_TASK_RESUME:"task-resume",EVENT_TASK_START:"task-start",EVENT_TASK_SUSPEND:"task-suspend",EVENT_USER_NAME:"user-name",init:function() {
+        Module['emscripten_trace_configure'] = _emscripten_trace_js_configure;
+        Module['emscripten_trace_configure_for_google_wtf'] = _emscripten_trace_configure_for_google_wtf;
+        Module['emscripten_trace_enter_context'] = _emscripten_trace_js_enter_context;
+        Module['emscripten_trace_exit_context'] = _emscripten_trace_exit_context;
+        Module['emscripten_trace_log_message'] = _emscripten_trace_js_log_message;
+        Module['emscripten_trace_mark'] = _emscripten_trace_js_mark;
+      },loadWorkerViaXHR:function(url, ready, scope) {
+        var req = new XMLHttpRequest();
+        req.addEventListener('load', function() {
+          var blob = new Blob([this.responseText], { type: 'text/javascript' });
+          var worker = new Worker(window.URL.createObjectURL(blob));
+          if (ready) {
+            ready.call(scope, worker);
+          }
+        }, req);
+        req.open("get", url, false);
+        req.send();
+      },configure:function(collector_url, application) {
+        EmscriptenTrace.now = _emscripten_get_now;
+        var now = new Date();
+        var session_id = now.getTime().toString() + '_' +
+                            Math.floor((Math.random() * 100) + 1).toString();
+        EmscriptenTrace.loadWorkerViaXHR(collector_url + 'worker.js', function (worker) {
+          EmscriptenTrace.worker = worker;
+          EmscriptenTrace.worker.addEventListener('error', function (e) {
+            out('TRACE WORKER ERROR:');
+            out(e);
+          }, false);
+          EmscriptenTrace.worker.postMessage({ 'cmd': 'configure',
+                                               'data_version': EmscriptenTrace.DATA_VERSION,
+                                               'session_id': session_id,
+                                               'url': collector_url });
+          EmscriptenTrace.configured = true;
+          EmscriptenTrace.collectorEnabled = true;
+          EmscriptenTrace.postEnabled = true;
+        });
+        EmscriptenTrace.post([EmscriptenTrace.EVENT_APPLICATION_NAME, application]);
+        EmscriptenTrace.post([EmscriptenTrace.EVENT_SESSION_NAME, now.toISOString()]);
+      },configureForTest:function() {
+        EmscriptenTrace.postEnabled = true;
+        EmscriptenTrace.testingEnabled = true;
+        EmscriptenTrace.now = function() { return 0.0; };
+      },configureForGoogleWTF:function() {
+        if (window && window['wtf']) {
+          EmscriptenTrace.googleWTFEnabled = true;
+        } else {
+          out('GOOGLE WTF NOT AVAILABLE TO ENABLE');
+        }
+      },post:function(entry) {
+        if (EmscriptenTrace.postEnabled && EmscriptenTrace.collectorEnabled) {
+          EmscriptenTrace.worker.postMessage({ 'cmd': 'post',
+                                               'entry': entry });
+        } else if (EmscriptenTrace.postEnabled && EmscriptenTrace.testingEnabled) {
+          out('Tracing ' + entry);
+        }
+      },googleWTFEnterScope:function(name) {
+        var scopeEvent = EmscriptenTrace.googleWTFData['cachedScopes'][name];
+        if (!scopeEvent) {
+          scopeEvent = window['wtf'].trace.events.createScope(name);
+          EmscriptenTrace.googleWTFData['cachedScopes'][name] = scopeEvent;
+        }
+        var scope = scopeEvent();
+        EmscriptenTrace.googleWTFData['scopeStack'].push(scope);
+      },googleWTFExitScope:function() {
+        var scope = EmscriptenTrace.googleWTFData['scopeStack'].pop();
+        window['wtf'].trace.leaveScope(scope);
+      }};
+  function _emscripten_trace_record_allocation(address, size) {
+      if (typeof Module['onMalloc'] === 'function') Module['onMalloc'](address, size);
+      if (EmscriptenTrace.postEnabled) {
+        var now = EmscriptenTrace.now();
+        EmscriptenTrace.post([EmscriptenTrace.EVENT_ALLOCATE,
+                              now, address, size]);
+      }
+    }
+
+  function _emscripten_trace_record_free(address) {
+      if (typeof Module['onFree'] === 'function') Module['onFree'](address);
+      if (EmscriptenTrace.postEnabled) {
+        var now = EmscriptenTrace.now();
+        EmscriptenTrace.post([EmscriptenTrace.EVENT_FREE,
+                              now, address]);
+      }
+    }
+
+  function _emscripten_trace_record_reallocation(old_address, new_address, size) {
+      if (typeof Module['onRealloc'] === 'function') Module['onRealloc'](old_address, new_address, size);
+      if (EmscriptenTrace.postEnabled) {
+        var now = EmscriptenTrace.now();
+        EmscriptenTrace.post([EmscriptenTrace.EVENT_REALLOCATE,
+                              now, old_address, new_address, size]);
+      }
     }
 
   var ENV = {};
@@ -6056,6 +6235,7 @@ init_RegisteredPointer();
 init_embind();;
 UnboundTypeError = Module['UnboundTypeError'] = extendError(Error, 'UnboundTypeError');;
 init_emval();;
+EmscriptenTrace.init();
 
   var FSNode = /** @constructor */ function(parent, name, mode, rdev) {
     if (!parent) {
@@ -6154,8 +6334,12 @@ var asmLibraryArg = {
   "_emval_incref": __emval_incref,
   "_emval_take_value": __emval_take_value,
   "abort": _abort,
+  "emscripten_asm_const_int": _emscripten_asm_const_int,
   "emscripten_memcpy_big": _emscripten_memcpy_big,
   "emscripten_resize_heap": _emscripten_resize_heap,
+  "emscripten_trace_record_allocation": _emscripten_trace_record_allocation,
+  "emscripten_trace_record_free": _emscripten_trace_record_free,
+  "emscripten_trace_record_reallocation": _emscripten_trace_record_reallocation,
   "environ_get": _environ_get,
   "environ_sizes_get": _environ_sizes_get,
   "fd_close": _fd_close,
@@ -6210,6 +6394,11 @@ var stackRestore = Module["stackRestore"] = function() {
 /** @type {function(...*):?} */
 var stackAlloc = Module["stackAlloc"] = function() {
   return (stackAlloc = Module["stackAlloc"] = Module["asm"]["stackAlloc"]).apply(null, arguments);
+};
+
+/** @type {function(...*):?} */
+var _sbrk = Module["_sbrk"] = function() {
+  return (_sbrk = Module["_sbrk"] = Module["asm"]["sbrk"]).apply(null, arguments);
 };
 
 /** @type {function(...*):?} */
