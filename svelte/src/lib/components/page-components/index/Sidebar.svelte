@@ -19,7 +19,7 @@
     <header>
         <h1>Sprocket Orbital Tracker</h1>
         <hr/>
-        <i>Press Ctrl+Space to pause/play</i>
+        <i>Press Shift+Space to pause/play</i>
     </header>
 
     <div>
