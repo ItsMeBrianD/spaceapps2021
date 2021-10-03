@@ -95,7 +95,19 @@ export class TleStore implements Readable<TleStoreState> {
         this._positions.set(output);
         positions.delete();
         return output as TleOutput[];
+    }
 
+    getPosition(year: number, month: number, day: number, id: string): TleOutput {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
+        if (this.state.loading === true) throw new Error("Wait for Module Initialization before loading TLEs");
+
+        const info = this.state.module.getPosition(year, month, day, id);
+        return {
+            id: info.get(0),
+            alt: parseFloat(info.get(1)),
+            lat: parseFloat(info.get(2)),
+            long: parseFloat(info.get(3)),
+        };
     }
 
     private updateState = (newState: TleStoreState): void => {

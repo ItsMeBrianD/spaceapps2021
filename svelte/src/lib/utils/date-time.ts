@@ -53,6 +53,17 @@ export const millisToYMD = (millis: number): [number, number, number] => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     // eslint-disable-next-line @typescript-eslint/no-extra-parens
-    const day = date.getDate() + (date.getUTCHours() / 24) + (date.getUTCMinutes() / (60 * 24)) + (date.getUTCSeconds() / (60 * 60 * 24)) + (date.getUTCMilliseconds() / (1000 * 60 * 60 * 24));
+    const day = date.getUTCDate() + (date.getUTCHours() / 24) + (date.getUTCMinutes() / (60 * 24)) + (date.getUTCSeconds() / (60 * 60 * 24)) + (date.getUTCMilliseconds() / (1000 * 60 * 60 * 24));
+    console.log(`${millis} -> ${year} ${month} ${day}`);
     return [year, month, day];
 };
+
+export const getTimeArray = (startTimestamp: number, periodMinutes: number, numPoints: number): number[] => {
+    const periodMillis = periodMinutes * 60 * 1000;
+    const periodFrac = periodMillis/(numPoints-1);
+    const arr = [startTimestamp];
+    for (let i = 1; i < numPoints; i++) {
+        arr.push(arr[i-1] + periodFrac);
+    }
+    return arr;
+}
