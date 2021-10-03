@@ -117,7 +117,7 @@
         height: 288px;
     }
     table {
-        @apply w-full
+        @apply w-full text-sm;
     }
     tr {
         @apply w-full;

@@ -27,7 +27,6 @@ class WWModule {
         const ww = await import("@nasaworldwind/worldwind");
 
         this.ww = ww;
-        console.log(this.ww);
         this.worldWin = new ww.WorldWindow(c);
         window.map = this.worldWin;
 
@@ -104,6 +103,11 @@ class WWModule {
                     placemark.userProperties = properties;
                     placemark.attributes.imageScale = 0.6;
                     placemark.attributes.imageSource = "/images/yellow.png";
+
+                    placemark.highlightAttributes = new ww.PlacemarkAttributes(placemark.attributes);
+                    placemark.highlightAttributes.imageScale = 0.8;
+                    placemark.highlightAttributes.imageSource = "/images/pink.png";
+                    placemark.highlightAttributes.drawLeaderLine = true;
                     
                     objectsLayer.addRenderable(placemark);
 
@@ -135,24 +139,24 @@ class WWModule {
             // If more than one object clicked, top of the array is top object clicked, if its not terrain it is an object
             if (pickList.objects.length && !pickList.objects[0]?.isTerrain) {
                 const properties = pickList.objects[0].userObject.userProperties;
-                this.placemarks[properties.id].attributes.imageSource = "/images/pink.png";
                 this.placemarks[properties.id].label = "Loading...";
+                this.placemarks[properties.id].highlighted = true;
                 selectedObject.update(curr => {
                     if (curr) {
-                        this.placemarks[curr.id].attributes.imageSource = "/images/yellow.png";
                         this.placemarks[curr.id].label = undefined;
+                        this.placemarks[curr.id].highlighted = false;
                     }
                     return properties;
                 });
-                this.worldWin.redraw();
             } else {
                 selectedObject.update(curr => {
                     if (!curr) return;
-                    this.placemarks[curr.id].attributes.imageSource = "/images/yellow.png";
                     this.placemarks[curr.id].label = undefined;
+                    this.placemarks[curr.id].highlighted = false;
                     return null;
                 });
             }
+            
             this.worldWin.redraw();
         };
 
@@ -163,7 +167,6 @@ class WWModule {
         const tapRecognizer = new ww.TapRecognizer(this.worldWin, handleClick);
 
         const timeChangedSub = currentTime.subscribe(time => this.store.getPositions(...millisToYMD(time)));
-        console.log(timeChangedSub);
         this.unsubs.push(timeChangedSub);
     };
 
