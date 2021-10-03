@@ -20,7 +20,7 @@ class PBManager {
 
     increment: number = 1;
 
-    framesPerSecond: number = 2;
+    framesPerSecond: number = 3;
 
     private _val = initialTime;
     
