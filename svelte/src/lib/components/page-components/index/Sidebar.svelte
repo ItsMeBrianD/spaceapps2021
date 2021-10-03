@@ -48,7 +48,7 @@
 
 <aside>
     <header>
-        <h1>Sprocket Orbital Tracker</h1>
+        <img src="/images/Full_Logo_Light.png" alt="Sprocket Orbital Tracker"/>
         <hr/>
         <i>Press Shift+Space to pause/play</i><br/>
         <i class="lg:hidden">Visualization is below filters</i>
@@ -89,6 +89,11 @@
 <style lang="postcss">
     aside {
         @apply px-6 py-8 flex flex-col h-full;
+    }
+    img {
+        @apply w-2/3 mx-auto mb-4;
+        max-height: 10rem;
+        width: auto;
     }
     header {
         @apply text-center mb-4;
