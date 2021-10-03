@@ -63,6 +63,7 @@ class WWModule {
                     this.placemarks[pos.id].position.longitude = pos.long;
                 }
             });
+            this.worldWin.redraw();
         });
         this.unsubs.push(posSub);
 
