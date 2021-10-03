@@ -5,7 +5,7 @@
   const {wasmMod: wasm} = getContext(ContextKeys.WasmStore);
 
   async function render() {
-    const tles = await fetch("/norad/iss.txt").then(async r => r.text());
+    const tles = await fetch("/norad/amateur.txt").then(async r => r.text());
 
     let enc = new TextEncoder();
     let tleArray = enc.encode(tles);
