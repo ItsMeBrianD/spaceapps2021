@@ -15,6 +15,20 @@ class WWModule {
         return this.worldWin.redraw.bind(this.worldWin) as CallableFunction;
     }
 
+    private defaultGlobe;
+
+    set projection(v: "2d" | "3d") {
+        
+        if (v === "2d") {
+            const map = new this.ww.Globe2D();
+            map.projection = new this.ww.ProjectionEquirectangular();
+            this.worldWin.globe = map;
+        } else {
+            this.worldWin.globe = this.defaultGlobe;
+        }
+        this.worldWin.redraw();
+    }
+
     private unsubs: CallableFunction[] = [];
     
     private ww: any;
@@ -22,6 +36,8 @@ class WWModule {
     private worldWin: any;
 
     private store: TleStore;
+
+    private map: any;
 
 
     init = async (c: HTMLCanvasElement, s: TleStore): Promise<void> => {
@@ -39,13 +55,8 @@ class WWModule {
 
         this.ww = ww;
         this.worldWin = new ww.WorldWindow(c);
-
-        // 2D Map???
-        const map = new ww.Globe2D();
-        map.projection = new ww.ProjectionEquirectangular();
-
-        this.worldWin.globe = map;
-
+        this.defaultGlobe = this.worldWin.globe;
+        
         const layers = [
             // Imagery layers.
             {layer: new ww.BMNGLayer(), enabled: true},
@@ -136,7 +147,15 @@ class WWModule {
 
 
                 // Show orbit
-                const period = (await fetch(`/api/satcat?catId=${properties.id}`).then(async r => r.json())).PERIOD;
+                const result = await fetch(`/api/satcat?catId=${properties.id}`).then(async r => {
+                    if (r.status === 200) return r.json();
+                    return false;
+                });
+                if (!result) {
+                    this.placemarks[properties.id].label = "Unknown";
+                    return;
+                }
+                const period = result.PERIOD;
                 const timeArray = getTimeArray(currentTimeValue, period, 100);
                 const positions = timeArray.map(time => this.store.getPosition(...millisToYMD(time), properties.id));
                 console.log(positions);

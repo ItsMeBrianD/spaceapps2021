@@ -13,7 +13,7 @@
         } else if (!cat || cat.NORAD_CAT_ID.toString() !== v.id) {
             loading = true;
             cat = await fetch(`/api/satcat?catId=${v.id}`).then(async r => {
-                if (r.ok) return r.json();
+                if (r.status === 200) return r.json();
                 return null;
             });
             if (cat) {

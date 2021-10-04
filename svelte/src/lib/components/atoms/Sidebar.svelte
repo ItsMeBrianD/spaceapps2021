@@ -66,8 +66,14 @@
     <section class="flex-1">
         <header><h2>Controls</h2></header>
 
+        <pre>Projection Mode</pre>
+        <div class="buttonRow">
+            <button on:click={() => WorldWindModule.projection = "2d"}>2D</button>
+            <button on:click={() => WorldWindModule.projection = "3d"}>3D</button>
+        </div>
+
         <pre>Time Scale</pre>
-        <div class="buttonRow">    
+        <div class="buttonRow">
             <button on:click={() => { updateIncrement(-2) }}>--</button>
             <button on:click={() => { updateIncrement(-1) }}>-</button>
             <button on:click={resetIncrement}>{PlaybackManager.increment}x</button>
