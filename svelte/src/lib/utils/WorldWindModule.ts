@@ -17,6 +17,8 @@ class WWModule {
 
     private defaultGlobe;
 
+    private currentProjection = "3d";
+
     set projection(v: "2d" | "3d") {
         
         if (v === "2d") {
@@ -26,6 +28,7 @@ class WWModule {
         } else {
             this.worldWin.globe = this.defaultGlobe;
         }
+        this.currentProjection = v;
         this.worldWin.redraw();
     }
 
@@ -90,7 +93,7 @@ class WWModule {
 
                 if (!this.placemarks[pos.id]) {
                     // Build new placemark
-                    const position = new ww.Position(pos.lat, pos.long, pos.alt);
+                    const position = new ww.Position(pos.lat, pos.long, this.currentProjection === "3d" ? pos.alt : 0);
 
                     const placemark = new ww.Placemark(position);
                     placemark.userProperties = properties;
@@ -107,7 +110,7 @@ class WWModule {
 
                     this.placemarks[pos.id] = placemark;
                 } else {
-                    this.placemarks[pos.id].position.altitude = pos.alt;
+                    this.placemarks[pos.id].position.altitude = this.currentProjection === "3d" ? pos.alt : 0;
                     this.placemarks[pos.id].position.latitude = pos.lat;
                     this.placemarks[pos.id].position.longitude = pos.long;
                 }
@@ -152,7 +155,7 @@ class WWModule {
                 const timeArray = getTimeArray(currentTimeValue, period, 100);
                 const positions = timeArray.map(time => this.store.getPosition(...millisToYMD(time), properties.id));
                 console.log(positions);
-                const pathPositions = positions.map(pos => new ww.Position(pos.lat, pos.long, pos.alt));
+                const pathPositions = positions.map(pos => new ww.Position(pos.lat, pos.long, this.currentProjection === "3d" ? pos.alt : 0));
         
                 const path = new ww.Path(pathPositions, null);
                 path.altitudeMode = ww.RELATIVE_TO_GROUND; // The path's altitude stays relative to the terrain's altitude.
