@@ -15,6 +15,20 @@ class WWModule {
         return this.worldWin.redraw.bind(this.worldWin) as CallableFunction;
     }
 
+    private defaultGlobe;
+
+    set projection(v: "2d" | "3d") {
+        
+        if (v === "2d") {
+            const map = new this.ww.Globe2D();
+            map.projection = new this.ww.ProjectionEquirectangular();
+            this.worldWin.globe = map;
+        } else {
+            this.worldWin.globe = this.defaultGlobe;
+        }
+        this.worldWin.redraw();
+    }
+
     private unsubs: CallableFunction[] = [];
     
     private ww: any;
@@ -22,6 +36,8 @@ class WWModule {
     private worldWin: any;
 
     private store: TleStore;
+
+    private map: any;
 
 
     init = async (c: HTMLCanvasElement, s: TleStore): Promise<void> => {
@@ -39,13 +55,8 @@ class WWModule {
 
         this.ww = ww;
         this.worldWin = new ww.WorldWindow(c);
-
-        // 2D Map???
-        const map = new ww.Globe2D();
-        map.projection = new ww.ProjectionEquirectangular();
-
-        this.worldWin.globe = map;
-
+        this.defaultGlobe = this.worldWin.globe;
+        
         const layers = [
             // Imagery layers.
             {layer: new ww.BMNGLayer(), enabled: true},
@@ -123,7 +134,7 @@ class WWModule {
             // If more than one object clicked, top of the array is top object clicked, if its not terrain it is an object
             if (pickList.objects.length && !pickList.objects[0]?.isTerrain) {
                 const properties = pickList.objects[0].userObject.userProperties;
-                this.placemarks[properties.id].label = "Loading...";
+                this.placemarks[properties.id].label = "Selected";
                 this.placemarks[properties.id].highlighted = true;
                 selectedObject.update(curr => {
                     if (curr) {
