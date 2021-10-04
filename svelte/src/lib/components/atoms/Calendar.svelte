@@ -1,8 +1,6 @@
 <script>
-  import {
-      getDateRows, noop, uuid,
-} from "$lib/utils/date-time";
-  import {createEventDispatcher} from "svelte";
+  import { getDateRows, noop, uuid } from "$lib/utils/date-time";
+  import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -17,18 +15,18 @@
   let cells;
 
   // function helpers
-  const onChange = _date => {
-      dispatch("datechange", new Date(year, month, _date));
+  const onChange = date => {
+    dispatch("datechange", new Date(year, month, date));
   };
 
-  const allow = (y, m, d) => {
-      if (!d) return true;
-      return isAllowed(new Date(y, m, d));
+  const allow = (year, month, date) => {
+    if (!date) return true;
+    return isAllowed(new Date(year, month, date));
   };
 
   $: cells = getDateRows(month, year).map(c => ({
-      value: c,
-      allowed: allow(year, month, c),
+    value: c,
+    allowed: allow(year, month, c)
   }));
 </script>
 
@@ -76,12 +74,12 @@
   <div class="row">
     {#each cells as { allowed, value } (uuid())}
       <div
-        on:click={allowed && value ? onChange : noop}
+        on:click={allowed && value ? onChange.bind(this, value) : noop}
         class:cell={true}
         class:highlight={allowed && value}
         class:disabled={!allowed}
         class:selected={new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime() === new Date(year, month, value).getTime()}>
-        {value || ""}
+        {value || ''}
       </div>
     {/each}
   </div>
