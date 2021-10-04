@@ -19,7 +19,7 @@ module.exports = {
 	  "svelte3",
 	  "@typescript-eslint",
 	],
-	ignorePatterns: [".eslintrc.js", "jest.config.js", "commitlint.config.js", "*.stories.svelte", "docs", "wasm.js"],
+	ignorePatterns: [".eslintrc.js","WorldWindShim.js", "jest.config.js", "commitlint.config.js", "*.stories.svelte", "docs", "wasm.js"],
 	overrides: [
 	  {
 		files: ["*.svelte"],
@@ -81,7 +81,7 @@ module.exports = {
 	  "no-unsafe-negation": "error",                                             /* (r ) disallow negating the left operand of relational operators */
 	  "no-unsafe-optional-chaining": "error",                                    /* (  ) disallow use of optional chaining in contexts where the `undefined` value is not allowed */
 	  "no-useless-backreference": "off",                                         /* (  ) disallow useless backreferences in regular expressions */
-	  "require-atomic-updates": "error",                                         /* (  ) disallow assignments that can lead to race conditions due to usage of `await` or `yield` */
+	  "require-atomic-updates": "off",                                           /* (  ) disallow assignments that can lead to race conditions due to usage of `await` or `yield` */
 	  "use-isnan": "error",                                                      /* (r ) require calls to `isNaN()` when checking for `NaN` */
 	  "valid-typeof": "error",                                                   /* (r ) enforce comparing `typeof` expressions against valid strings */
   
@@ -130,7 +130,7 @@ module.exports = {
 	  "no-magic-numbers": "off",                                                 /* (  ) disallow magic numbers */ // Disabled in favor of typescript-eslint rule below
 	  "no-multi-spaces": "off",                                                  /* ( f) disallow multiple spaces */
 	  "no-multi-str": "error",                                                   /* (  ) disallow multiline strings */
-	  "no-new": "error",                                                         /* (  ) disallow `new` operators outside of assignments or comparisons */
+	  "no-new": "off",                                                           /* (  ) disallow `new` operators outside of assignments or comparisons */
 	  "no-new-func": "error",                                                    /* (  ) disallow `new` operators with the `Function` object */
 	  "no-new-wrappers": "error",                                                /* (  ) disallow `new` operators with the `String`, `Number`, and `Boolean` objects */
 	  "no-nonoctal-decimal-escape": "error",                                     /* (  ) disallow `\8` and `\9` escape sequences in string literals */
@@ -434,8 +434,8 @@ module.exports = {
 	  "@typescript-eslint/no-implicit-any-catch": "off",                         /* ( f ) Disallow usage of the implicit any type in catch clauses */
 	  "@typescript-eslint/no-inferrable-types": "off",                           /* (rf ) Disallows explicit type declarations for variables or parameters initialized to a number, string, or boolean */
 	  "@typescript-eslint/no-invalid-void-type": "error",                        /* (   ) Disallows usage of void type outside of generic or return types */
-	  "@typescript-eslint/no-misused-new": "error",                              /* (r  ) Enforce valid definition of new and constructor */
-	  "@typescript-eslint/no-misused-promises": "error",                         /* (r t) Avoid using promises in places not designed to handle them */
+	  "@typescript-eslint/no-misused-new": "off",                                /* (r  ) Enforce valid definition of new and constructor */
+	  "@typescript-eslint/no-misused-promises": "off",                           /* (r t) Avoid using promises in places not designed to handle them */
 	  "@typescript-eslint/no-namespace": "error",                                /* (r  ) Disallow the use of custom TypeScript modules and namespaces */
 	  "@typescript-eslint/no-non-null-asserted-optional-chain": "error",         /* (r  ) Disallows using a non-null assertion after an optional chain expression */
 	  "@typescript-eslint/no-non-null-assertion": "off",                         /* (r  ) Disallows non-null assertions using the ! postfix operator */
@@ -453,7 +453,7 @@ module.exports = {
 	  "@typescript-eslint/no-unsafe-assignment": "off",                          /* (r t) Disallows assigning any to variables and properties */ // Disabled because this doesn't play nicely with svelte
 	  "@typescript-eslint/no-unsafe-call": "off",                                /* (r t) Disallows calling an any type value */ // Disabled because this doesn't play nicely with svelte
 	  "@typescript-eslint/no-unsafe-member-access": "off",                       /* (r t) Disallows member access on any typed variables */
-	  "@typescript-eslint/no-unsafe-return": "error",                            /* (r t) Disallows returning any from a function */
+	  "@typescript-eslint/no-unsafe-return": "off",                              /* (r t) Disallows returning any from a function */
 	  "@typescript-eslint/no-var-requires": "error",                             /* (r  ) Disallows the use of require statements except in import statements */
 	  "@typescript-eslint/non-nullable-type-assertion-style": "error",           /* ( ft) Prefers a non-null assertion over explicit type cast when possible */
 	  "@typescript-eslint/prefer-as-const": "error",                             /* (rf ) Prefer usage of as const over literal type */
@@ -536,7 +536,7 @@ module.exports = {
 	  "@typescript-eslint/no-dupe-class-members": "error",                       /* (   ) Disallow duplicate class members */
 	  "@typescript-eslint/no-duplicate-imports": "error",                        /* (   ) Disallow duplicate imports */
 	  "@typescript-eslint/no-empty-function": "off",                             /* (r  ) Disallow empty functions */
-	  "@typescript-eslint/no-extra-parens": "error",                             /* ( f ) Disallow unnecessary parentheses */
+	  "@typescript-eslint/no-extra-parens": "off",                               /* ( f ) Disallow unnecessary parentheses */
 	  "@typescript-eslint/no-extra-semi": "error",                               /* (rf ) Disallow unnecessary semicolons */
 	  "@typescript-eslint/no-implied-eval": "error",                             /* (r t) Disallow the use of eval()-like methods */
 	  "@typescript-eslint/no-invalid-this": "error",                             /* (   ) Disallow this keywords outside of classes or class-like objects */

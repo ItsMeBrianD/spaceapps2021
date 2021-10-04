@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import wasm from "$lib/wasm/wasm";
 import {currentTime, selectedObject} from "../state/AppState";
 import type {TleStore} from "../state/TleStore";
-import { getTimeArray, millisToYMD } from "./date-time";
-import { shim } from "./WorldWindShim";
+import {getTimeArray, millisToYMD} from "./date-time";
+import {shim} from "./WorldWindShim";
 
 class WWModule {
     yeet: CallableFunction;
@@ -12,8 +11,8 @@ class WWModule {
 
     private orbitLayer;
 
-    get redraw() {
-        return this.worldWin.redraw.bind(this.worldWin);
+    get redraw(): CallableFunction {
+        return this.worldWin.redraw.bind(this.worldWin) as CallableFunction;
     }
 
     private unsubs: CallableFunction[] = [];
@@ -40,10 +39,6 @@ class WWModule {
 
         this.ww = ww;
         this.worldWin = new ww.WorldWindow(c);
-        window.map = this.worldWin;
-
-
-
 
         const layers = [
             // Imagery layers.
@@ -110,8 +105,7 @@ class WWModule {
 
         // The common gesture-handling function.
         const handleClick = async recognizer => {
-            if (this.orbitLayer)
-                this.orbitLayer.removeAllRenderables();
+            if (this.orbitLayer) this.orbitLayer.removeAllRenderables();
             // Obtain the event location.
             const x = recognizer.clientX,
                   y = recognizer.clientY;
@@ -136,7 +130,7 @@ class WWModule {
 
 
                 // Show orbit
-                const period = (await fetch(`/api/satcat?catId=${properties.id}`).then(r => r.json())).PERIOD;
+                const period = (await fetch(`/api/satcat?catId=${properties.id}`).then(async r => r.json())).PERIOD;
                 const timeArray = getTimeArray(currentTimeValue, period, 100);
                 const positions = timeArray.map(time => this.store.getPosition(...millisToYMD(time), properties.id));
                 console.log(positions);
@@ -160,7 +154,7 @@ class WWModule {
 
             } else {
                 selectedObject.update(curr => {
-                    if (!curr) return;
+                    if (!curr) return null;
                     this.placemarks[curr.id].label = undefined;
                     this.placemarks[curr.id].highlighted = false;
 
@@ -170,12 +164,12 @@ class WWModule {
             
             this.worldWin.redraw();
         };
-        const clickRecognizer = new ww.ClickRecognizer(this.worldWin, handleClick);
-        const tapRecognizer = new ww.TapRecognizer(this.worldWin, handleClick);
+        new ww.ClickRecognizer(this.worldWin, handleClick);
+        new ww.TapRecognizer(this.worldWin, handleClick);
 
         const timeChangedSub = currentTime.subscribe(time => {
             currentTimeValue = time;
-            this.store.getPositions(...millisToYMD(time))
+            this.store.getPositions(...millisToYMD(time));
         });
         this.unsubs.push(timeChangedSub);
     };

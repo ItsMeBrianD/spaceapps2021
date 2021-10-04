@@ -1,34 +1,33 @@
 <script lang="ts">
-    import { selectedObject } from "$lib/state/AppState";
-    import { onDestroy } from "svelte";
-    import { WorldWindModule } from "../../utils/WorldWindModule";
+    import {selectedObject} from "$lib/state/AppState";
+    import {onDestroy} from "svelte";
+    import {WorldWindModule} from "../../utils/WorldWindModule";
     import Spinner from "./Spinner.svelte";
 
     let cat;
     let loading = false;
 
-    const unsub = selectedObject.subscribe(async (v) => {
-        if(!v?.id) {
+    const unsub = selectedObject.subscribe(async v => {
+        if (!v?.id) {
             cat = undefined;
         } else if (!cat || cat.NORAD_CAT_ID.toString() !== v.id) {
             loading = true;
-            cat = await fetch(`/api/satcat?catId=${v.id}`).then(r => {
-                if(r.ok) return r.json();
-                else return null;
+            cat = await fetch(`/api/satcat?catId=${v.id}`).then(async r => {
+                if (r.ok) return r.json();
+                return null;
             });
-            if(cat) {
+            if (cat) {
                 WorldWindModule.placemarks[v.id].label = cat.OBJECT_NAME;
             }
             WorldWindModule.redraw();
             loading = false;
-
         }
     });
     onDestroy(unsub);
 
 
     const formatLatLong = x => `${x > 0 ? "+" : ""}${x.toFixed(3)}`;
-    const formatAlt = x => (x/1000).toFixed(3);
+    const formatAlt = x => (x / 1000).toFixed(3);
     const objectTypeToString = abbr => {
         switch (abbr) {
             case "PAY": return "Payload";
@@ -37,7 +36,7 @@
             case "UNK": return "Unknown";
             default: return abbr;
         }
-    }
+    };
 </script>
 
 

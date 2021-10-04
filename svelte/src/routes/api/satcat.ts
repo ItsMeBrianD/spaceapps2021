@@ -1,7 +1,7 @@
 import type {Request, Response} from "@sveltejs/kit";
 import {supabase} from "$lib/utils/supabase";
 
-export const get = async ({query}: Request): Response => {
+export const get = async ({query}: Request): Promise<Response> => {
     try {
         const id = parseInt(query.get("catId"));
     
@@ -12,6 +12,12 @@ export const get = async ({query}: Request): Response => {
             return {
                 status: 404,
                 body: "Not Found",
+                headers: {},
+            };
+        }
+        if (error) {
+            return {
+                status: 500,
                 headers: {},
             };
         }

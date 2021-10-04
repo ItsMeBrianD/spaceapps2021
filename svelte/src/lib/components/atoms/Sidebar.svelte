@@ -4,15 +4,15 @@
 
     import {availableDatasets, ContextKeys} from "$lib/utils/constants";
     import Select from "$lib/components/atoms/Select.svelte";
-    import type {TleStore} from "../../../state/TleStore";
-    import {WorldWindModule} from "../../../utils/WorldWindModule";
+    import type {TleStore} from "$lib/state/TleStore";
+    import {WorldWindModule} from "$lib/utils/WorldWindModule";
     import {
         currentTime, PlaybackManager, playing, selectedObject,
-} from "../../../state/AppState";
-    import {leftPad} from "../../../utils/time";
+    } from "$lib/state/AppState";
+    import {leftPad} from "$lib/utils/time";
     import ObjectInfo from "$lib/components/atoms/ObjectInfo.svelte";
     import DatePicker from "$lib/components/atoms/DatePicker.svelte";
-    import { millisToYMD } from "$lib/utils/date-time";
+    import {millisToYMD} from "$lib/utils/date-time";
     
     const wasm: TleStore = getContext(ContextKeys.WasmStore);
 
@@ -57,10 +57,10 @@
 
     <section>
         <header><h2>Filters</h2></header>
-        <label>
+        <span>
             <pre>Dataset:</pre>
             <Select options={availableDatasets} on:change={handleSelectDataset}/>
-        </label>
+        </span>
     </section>
 
     <section class="flex-1">
@@ -68,18 +68,18 @@
 
         <pre>Time Scale</pre>
         <div class="buttonRow">    
-            <button on:click={() => updateIncrement(-2)}>--</button>
-            <button on:click={() => updateIncrement(-1)}>-</button>
+            <button on:click={() => { updateIncrement(-2) }}>--</button>
+            <button on:click={() => { updateIncrement(-1) }}>-</button>
             <button on:click={resetIncrement}>{PlaybackManager.increment}x</button>
-            <button on:click={() => updateIncrement(1)}>+</button>
-            <button on:click={() => updateIncrement(2)}>++</button>
+            <button on:click={() => { updateIncrement(1) }}>+</button>
+            <button on:click={() => { updateIncrement(2) }}>++</button>
         </div>
         <pre>Skip To</pre>
         <div class="buttonRow">
         <DatePicker
-            on:datechange={(d) => PlaybackManager.setTime(d.detail.getTime())}
+            on:datechange={d => { PlaybackManager.setTime(d.detail.getTime()) }}
             selected={new Date($currentTime)}
-        />  <button class="w-full" on:click={() => PlaybackManager.setTime(new Date().getTime())}>Reset</button>  
+        />  <button class="w-full" on:click={() => { PlaybackManager.setTime(new Date().getTime()) }}>Reset</button>  
         </div>
         <div class="buttonRow">
             
@@ -95,7 +95,7 @@
     </section>
 
     {#if $selectedObject}
-        <section transition:fly={{x:-50}}>
+        <section transition:fly={{x: -50}}>
             <header><h2>Selected Object</h2></header>
             <ObjectInfo />
         </section>
@@ -129,10 +129,10 @@
     section header h2 {
         @apply text-xl font-bold mb-2;
     }
-    section label {
+    section span {
         @apply flex justify-between items-center;
     }
-    section label :global(select) {
+    section span :global(select) {
         @apply w-2/3;
     }
     section {

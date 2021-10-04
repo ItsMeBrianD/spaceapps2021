@@ -5,7 +5,7 @@
 	import {TleStore} from "$lib/state/TleStore";
 	import {ContextKeys} from "$lib/utils/constants";
 	import DefaultLayout from "$lib/components/layouts/DefaultLayout.svelte";
-	import Sidebar from "$lib/components/page-components/index/Sidebar.svelte";
+	import Sidebar from "$lib/components/atoms/Sidebar.svelte";
 	import Spinner from "$lib/components/atoms/Spinner.svelte";
 	import {readable} from "svelte/store";
 	

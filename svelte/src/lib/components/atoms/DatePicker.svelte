@@ -1,59 +1,62 @@
 <script lang='ts'>
   import {slide} from "svelte/transition";
-  import { createEventDispatcher } from "svelte";
-  import { getMonthName } from "$lib/utils/date-time";
-  import Calendar from "./Calendar.svelte"
+  import {createEventDispatcher} from "svelte";
+  import {getMonthName} from "$lib/utils/date-time";
+  import Calendar from "./Calendar.svelte";
 
   const dispatch = createEventDispatcher();
 
   // props
-  export let isAllowed = () => true;
+  export let isAllowed = (): boolean => true;
   export let selected = new Date();
 
   // state
-  let date, month, year, showDatePicker;
+  let date: number,
+      month: number,
+      year: number;
+  let showDatePicker = false;
 
   // so that these change with props
   $: {
-    date = selected.getDate();
-    month = selected.getMonth();
-    year = selected.getFullYear();
+      date = selected.getDate();
+      month = selected.getMonth();
+      year = selected.getFullYear();
   }
 
   // handlers
   const onFocus = () => {
-    showDatePicker = !showDatePicker;
+      showDatePicker = !showDatePicker;
   };
 
   const next = () => {
-    if (month === 11) {
-      month = 0;
-      year = year + 1;
-      return;
-    }
-    month = month + 1;
+      if (month === 11) {
+          month = 0;
+          year = year + 1;
+          return;
+      }
+      month = month + 1;
   };
 
   const prev = () => {
-    if (month === 0) {
-      month = 11;
-      year -= 1;
-      return;
-    }
-    month -= 1;
+      if (month === 0) {
+          month = 11;
+          year -= 1;
+          return;
+      }
+      month -= 1;
   };
 
   const onDateChange = d => {
-    showDatePicker = false;
-    dispatch("datechange", d.detail);
+      showDatePicker = false;
+      dispatch("datechange", d.detail);
   };
 
   let el: HTMLElement;
   const handleBodyClick = (e: MouseEvent) => {
-    if(!el.contains(e.target)) {
-      showDatePicker = false;
-    }
-  }
+      if (!el.contains(e.target as HTMLElement)) {
+          showDatePicker = false;
+      }
+  };
 </script>
 
 <svelte:body on:click={handleBodyClick}/>

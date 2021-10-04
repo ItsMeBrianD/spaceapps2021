@@ -26,14 +26,15 @@ const getMonthStats = (monthIndex, year) => {
     };
 };
 
-export const getMonthName = index => monthNames[index];
+export const getMonthName = (index: number): string => monthNames[index];
 
-export const getDateRows = (monthIndex, year) => {
+export const getDateRows = (monthIndex: number, year: number): any => {
     const {days} = getMonthStats(monthIndex, year);
     const rows = getEmptyRows();
     const startIndex = new Date(year, monthIndex, 1).getDay();
     Array.from({length: days}).forEach((_, i) => {
         const index = startIndex + i;
+        // @ts-expect-error This code was taken from a REPL and was not designed with typescript in mind
         rows[index] = i + 1;
     });
     const filled = rows.map(i => (Array.isArray(i) ? undefined : i));
@@ -41,7 +42,7 @@ export const getDateRows = (monthIndex, year) => {
     return filled[35] ? filled : filled.slice(0, -7);
 };
 
-export const noop = () => { };
+export const noop = (): void => { };
 
 export const uuid = (() => {
     let id = 1;
@@ -60,10 +61,10 @@ export const millisToYMD = (millis: number): [number, number, number] => {
 
 export const getTimeArray = (startTimestamp: number, periodMinutes: number, numPoints: number): number[] => {
     const periodMillis = periodMinutes * 60 * 1000;
-    const periodFrac = periodMillis/(numPoints-1);
+    const periodFrac = periodMillis / (numPoints - 1);
     const arr = [startTimestamp];
-    for (let i = 1; i < numPoints; i++) {
-        arr.push(arr[i-1] + periodFrac);
+    for (let i = 1;i < numPoints;i++) {
+        arr.push(arr[i - 1] + periodFrac);
     }
     return arr;
-}
+};
