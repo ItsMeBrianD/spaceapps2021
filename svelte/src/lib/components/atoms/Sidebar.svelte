@@ -19,11 +19,17 @@
 
     async function handleSelectDataset(e) {
         selectedObject.set(null);
+        let wasPlaying = Boolean($playing);
+        $playing = false;
 
         // This one's for you Zach
         WorldWindModule.yeet();
         dataLoaded = Boolean(e.target.value);
-        if (!e.target.value) return;
+        if (!e.target.value) {
+            WorldWindModule.redraw();
+            $playing = wasPlaying;
+            return;
+        }
         
         const newDatasetLocation = e.target.value;
         
@@ -31,6 +37,8 @@
         wasm.updateValues(newData);
 
         wasm.getPositions(...millisToYMD($currentTime));
+
+        $playing = wasPlaying;
 
         e.target.blur();
     }
