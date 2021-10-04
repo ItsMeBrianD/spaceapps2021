@@ -10,6 +10,7 @@ class WWModule {
     placemarks: Record<string, any> = {};
 
     private orbitLayer;
+    private objectsLayer;
 
     get redraw(): CallableFunction {
         return this.worldWin.redraw.bind(this.worldWin) as CallableFunction;
@@ -21,6 +22,8 @@ class WWModule {
 
     private selected;
     private currentTimeValue;
+
+    private dirty;
 
     set projection(v: "2d" | "3d") {
         
@@ -73,11 +76,11 @@ class WWModule {
         ];
         layers.forEach(l => { this.worldWin.addLayer(l.layer) });
 
-        const objectsLayer = new ww.RenderableLayer("Objects");
-        this.worldWin.addLayer(objectsLayer);
+        this.objectsLayer = new ww.RenderableLayer("Objects");
+        this.worldWin.addLayer(this.objectsLayer);
 
         this.yeet = () => {
-            objectsLayer.removeAllRenderables();
+            this.objectsLayer.removeAllRenderables();
             if (this.orbitLayer) this.orbitLayer.removeAllRenderables();
             this.placemarks = {};
         };
@@ -85,43 +88,15 @@ class WWModule {
         selectedObject.subscribe(x => { this.selected = x });
 
         const posSub = s.positions.subscribe(allPositions => {
-            allPositions.forEach(pos => {
-                const properties = {
-                    id: pos.id,
-                    lat: pos.lat,
-                    long: pos.long,
-                    alt: pos.alt,
-                };
+            this.drawDots(allPositions);
 
-                if (!this.placemarks[pos.id]) {
-                    // Build new placemark
-                    const position = new ww.Position(pos.lat, pos.long, this.currentProjection === "3d" ? pos.alt : 0);
-
-                    const placemark = new ww.Placemark(position);
-                    placemark.userProperties = properties;
-                    placemark.attributes.imageScale = 0.6;
-                    placemark.attributes.imageSource = "/images/yellow.png";
-
-                    placemark.highlightAttributes = new ww.PlacemarkAttributes(placemark.attributes);
-                    placemark.highlightAttributes.imageScale = 0.8;
-                    placemark.highlightAttributes.imageSource = "/images/pink.png";
-                    placemark.highlightAttributes.drawLeaderLine = true;
-                    placemark.highlightAttributes.leaderLineAttributes.outlineColor = new ww.Color(0.850980392, 0.290196078, 0.701960784, 1);
-                    
-                    objectsLayer.addRenderable(placemark);
-
-                    this.placemarks[pos.id] = placemark;
-                } else {
-                    this.placemarks[pos.id].position.altitude = this.currentProjection === "3d" ? pos.alt : 0;
-                    this.placemarks[pos.id].position.latitude = pos.lat;
-                    this.placemarks[pos.id].position.longitude = pos.long;
-                }
-
-                if (pos.id === this.selected?.id) {
-                    selectedObject.set(properties);
-                }
-            });
-            this.worldWin.redraw();
+            if (this.dirty && this.selected) {
+                this.placemarks[this.selected.id].highlighted = true;
+            }
+            
+            if (this.dirty) {
+                this.dirty = false;
+            }
         });
         this.unsubs.push(posSub);
 
@@ -162,6 +137,53 @@ class WWModule {
         this.unsubs.push(timeChangedSub);
     };
 
+    drawDots = (allPositions) => {
+        allPositions.forEach(pos => {
+            const properties = {
+                id: pos.id,
+                lat: pos.lat,
+                long: pos.long,
+                alt: pos.alt,
+            };
+
+            if (!this.placemarks[pos.id]) {
+                // Build new placemark
+                const position = new this.ww.Position(pos.lat, pos.long, this.currentProjection === "3d" ? pos.alt : 0);
+
+                const placemark = new this.ww.Placemark(position);
+                placemark.userProperties = properties;
+                placemark.attributes.imageScale = 0.6;
+                placemark.attributes.imageSource = "/images/yellow.png";
+
+                placemark.highlightAttributes = new this.ww.PlacemarkAttributes(placemark.attributes);
+                placemark.highlightAttributes.imageScale = 0.8;
+                placemark.highlightAttributes.imageSource = "/images/pink.png";
+                placemark.highlightAttributes.drawLeaderLine = true;
+                placemark.highlightAttributes.leaderLineAttributes.outlineColor = new this.ww.Color(0.850980392, 0.290196078, 0.701960784, 1); // yellow
+                
+                this.objectsLayer.addRenderable(placemark);
+
+                this.placemarks[pos.id] = placemark;
+            } else {
+                this.placemarks[pos.id].position.altitude = this.currentProjection === "3d" ? pos.alt : 0;
+                this.placemarks[pos.id].position.latitude = pos.lat;
+                this.placemarks[pos.id].position.longitude = pos.long;
+            }
+
+            if (pos.id === this.selected?.id) {
+                selectedObject.set(properties);
+            }
+
+            if (this.selected?.id === pos.id) {
+                console.log(this.placemarks);
+                this.placemarks[pos.id].highlighted = true;
+                console.log(this.placemarks[pos.id].highlighted);
+                console.log(this.placemarks[pos.id]);
+            }
+        });
+        this.worldWin.redraw();
+    };
+
     drawOrbit = (id) => {
         this.placemarks[id].highlighted = true;
         selectedObject.update(curr => {
@@ -197,9 +219,14 @@ class WWModule {
     };
 
     onProjectionChange = () => {
+        this.yeet();
+        this.store.getPositions(...millisToYMD(this.currentTimeValue));
+
+        // const allPositions = Object.values(this.placemarks).map(v => v.userProperties);
+        // this.drawDots(allPositions);
+
         if (this.selected) {
-            console.log("redrawing orbit on projection change");
-            this.orbitLayer.removeAllRenderables();
+            this.dirty = true;
             this.drawOrbit(this.selected.id);
         }
     };
