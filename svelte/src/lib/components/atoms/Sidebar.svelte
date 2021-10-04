@@ -73,18 +73,38 @@
         <DatePicker
             on:datechange={d => { PlaybackManager.setTime(d.detail.getTime()) }}
             selected={new Date($currentTime)}
-        />  <button class="w-full" on:click={() => { PlaybackManager.setTime(new Date().getTime()) }}>Reset</button>  
+        />  
+        <button class="w-full" on:click={() => { PlaybackManager.setTime(new Date().getTime()) }}>
+            Reset
+            <span class="simple-tooltip">Reset to Current Moment</span>
+        </button>  
+        
         </div>
 
         <pre>Time Scale</pre>
         <div class="buttonRow">
-            <button on:click={() => { updateIncrement(-2) }}>--</button>
-            <button on:click={() => { updateIncrement(-1) }}>-</button>
-            <button on:click={resetIncrement}>{PlaybackManager.increment}x</button>
-            <button on:click={() => { updateIncrement(1) }}>+</button>
-            <button on:click={() => { updateIncrement(2) }}>++</button>
+            <button on:click={() => { updateIncrement(-2) }}>
+                --
+                <span class="simple-tooltip">Slow down by 2x realtime</span>
+            </button>
+            <button on:click={() => { updateIncrement(-1) }}>
+                -
+                <span class="simple-tooltip">Slow down by 1x realtime</span>
+            </button>
+            <button on:click={resetIncrement}>
+                {PlaybackManager.increment}x
+                <span class="simple-tooltip">Reset to 1x realtime</span>
+            </button>
+            <button on:click={() => { updateIncrement(1) }}>
+                +
+                <span class="simple-tooltip">Speed up by 1x realtime</span>
+            </button>
+            <button on:click={() => { updateIncrement(2) }}>
+                ++
+                <span class="simple-tooltip">Speed up by 2x realtime</span>
+            </button>
         </div>
-        
+
         <pre>As of {formattedTime} (local time)</pre>
         <div class="buttonRow">
             <button on:click={() => { $playing = !$playing }} class="play">
@@ -94,8 +114,14 @@
 
         <pre>Projection Mode</pre>
         <div class="buttonRow">
-            <button on:click={() => WorldWindModule.projection = "2d"}>2D</button>
-            <button on:click={() => WorldWindModule.projection = "3d"}>3D</button>
+            <button on:click={() => WorldWindModule.projection = "2d"}>
+                2D
+                <span class="simple-tooltip">Switch to 2D Map Mode</span>
+            </button>
+            <button on:click={() => WorldWindModule.projection = "3d"}>
+                3D
+                <span class="simple-tooltip">Switch to 3D Map Mode</span>
+            </button>
         </div>
         
     </section>
@@ -135,7 +161,7 @@
     section header h2 {
         @apply text-xl font-bold mb-2;
     }
-    section span {
+    section span:not(.simple-tooltip) {
         @apply flex justify-between items-center;
     }
     section span :global(select) {

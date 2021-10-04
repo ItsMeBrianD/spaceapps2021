@@ -1,5 +1,6 @@
 <script lang="ts">
 	import "../app.postcss";
+	import "../simple-tooltip.postcss"
 </script>
 
 <slot />

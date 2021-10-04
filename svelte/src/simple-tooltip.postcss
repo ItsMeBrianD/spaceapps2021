@@ -1,0 +1,27 @@
+/**
+  To use, create a <span class="simple-tooltip"> inside the element you would like to have a tooltip for
+ */
+
+ .simple-tooltip {
+     @apply box-border hidden absolute z-50 text-light-gray-200 bg-secondary-500
+     opacity-0 whitespace-nowrap origin-top select-none left-full top-1/2 px-1;
+     transform: translate(8px, -50%));
+
+
+ }
+ .simple-tooltip::after {
+     content: '';
+     @apply absolute border-8 border-secondary-500 top-1/2 -left-4 -translate-y-1/2;
+
+     border-bottom-color: transparent;
+     border-left-color: transparent;
+     border-top-color: transparent;
+     
+ }
+
+ *:hover > .simple-tooltip {
+    @apply opacity-100 inline-block;
+    transform: scaleX(1) translate(8px, -50%);
+ }
+ 
+ 
