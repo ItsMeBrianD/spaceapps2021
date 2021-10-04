@@ -15,13 +15,14 @@
     import {millisToYMD} from "$lib/utils/date-time";
     
     const wasm: TleStore = getContext(ContextKeys.WasmStore);
+    let dataLoaded = false;
 
     async function handleSelectDataset(e) {
         selectedObject.set(null);
 
         // This one's for you Zach
         WorldWindModule.yeet();
-
+        dataLoaded = Boolean(e.target.value);
         if (!e.target.value) return;
         
         const newDatasetLocation = e.target.value;
@@ -53,6 +54,7 @@
         <img src="/images/Full_Logo_Light.png" alt="Sprocket Orbital Tracker"/>
         <hr/>
         <pre class="lg:hidden">Visualization is below filters</pre>
+        {#if dataLoaded}<pre>Click or tap an object for details</pre>{/if}
     </header>
 
     <section>
@@ -66,10 +68,12 @@
     <section class="flex-1">
         <header><h2>Controls</h2></header>
 
-        <pre>Projection Mode</pre>
+        <pre>Skip To</pre>
         <div class="buttonRow">
-            <button on:click={() => WorldWindModule.projection = "2d"}>2D</button>
-            <button on:click={() => WorldWindModule.projection = "3d"}>3D</button>
+        <DatePicker
+            on:datechange={d => { PlaybackManager.setTime(d.detail.getTime()) }}
+            selected={new Date($currentTime)}
+        />  <button class="w-full" on:click={() => { PlaybackManager.setTime(new Date().getTime()) }}>Reset</button>  
         </div>
 
         <pre>Time Scale</pre>
@@ -80,22 +84,18 @@
             <button on:click={() => { updateIncrement(1) }}>+</button>
             <button on:click={() => { updateIncrement(2) }}>++</button>
         </div>
-        <pre>Skip To</pre>
-        <div class="buttonRow">
-        <DatePicker
-            on:datechange={d => { PlaybackManager.setTime(d.detail.getTime()) }}
-            selected={new Date($currentTime)}
-        />  <button class="w-full" on:click={() => { PlaybackManager.setTime(new Date().getTime()) }}>Reset</button>  
-        </div>
-        <div class="buttonRow">
-            
-        </div>
-    
+        
         <pre>As of {formattedTime} (local time)</pre>
         <div class="buttonRow">
             <button on:click={() => { $playing = !$playing }} class="play">
                 {$playing ? "Pause" : "Play"}
             </button>
+        </div>
+
+        <pre>Projection Mode</pre>
+        <div class="buttonRow">
+            <button on:click={() => WorldWindModule.projection = "2d"}>2D</button>
+            <button on:click={() => WorldWindModule.projection = "3d"}>3D</button>
         </div>
         
     </section>
