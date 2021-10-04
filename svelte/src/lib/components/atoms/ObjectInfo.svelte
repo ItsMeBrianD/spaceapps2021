@@ -6,11 +6,10 @@
 
     let cat;
     let loading = false;
-
     const unsub = selectedObject.subscribe(async v => {
         if (!v?.id) {
             cat = undefined;
-        } else if (!cat || cat.NORAD_CAT_ID.toString() !== v.id) {
+        } else if (!cat || cat.NORAD_CAT_ID !== parseInt(v.id)) {
             loading = true;
             cat = await fetch(`/api/satcat?catId=${v.id}`).then(async r => {
                 if (r.status === 200) return r.json();
