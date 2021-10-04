@@ -110,6 +110,11 @@ export class TleStore implements Readable<TleStoreState> {
         };
     }
 
+    getPeriod(id: string): number {
+        if (this.state.loading === true) throw new Error("Wait for Module Initialization before loading TLEs");
+        return this.state.module.getPeriod(id);
+    }
+
     private updateState = (newState: TleStoreState): void => {
         this.state = newState;
         this.subs.forEach(sub => { sub(newState) });

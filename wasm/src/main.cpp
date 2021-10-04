@@ -137,10 +137,10 @@ std::vector<std::string> getPosition(int year, int month, float day, std::string
   return info;
 }
 
-
-
-
-
+double getPeriod(std::string id){
+  ObjWithId objWithId = OBJS[id];
+  return objWithId.obj.es.eso_n;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -245,6 +245,7 @@ EMSCRIPTEN_BINDINGS(my_module) {
   function("loadObjs", &loadObjs);
   function("getPositions", &getPositions);
   function("getPosition", &getPosition);
+  function("getPeriod", &getPeriod);
 
   register_vector<std::string>("VectorString");
   register_vector<std::vector<std::string>>("2DVectorString");

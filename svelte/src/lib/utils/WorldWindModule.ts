@@ -136,7 +136,8 @@ class WWModule {
 
 
                 // Show orbit
-                const period = (await fetch(`/api/satcat?catId=${properties.id}`).then(async r => r.json())).PERIOD;
+                const rpd = this.store.getPeriod(properties.id); //period is rev/day 
+                const period = (1 / rpd) * 60 * 24; //period in min/rev
                 const timeArray = getTimeArray(currentTimeValue, period, 100);
                 const positions = timeArray.map(time => this.store.getPosition(...millisToYMD(time), properties.id));
                 console.log(positions);

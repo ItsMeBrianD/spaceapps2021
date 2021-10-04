@@ -55,7 +55,6 @@ export const millisToYMD = (millis: number): [number, number, number] => {
     const month = date.getMonth() + 1;
     // eslint-disable-next-line @typescript-eslint/no-extra-parens
     const day = date.getUTCDate() + (date.getUTCHours() / 24) + (date.getUTCMinutes() / (60 * 24)) + (date.getUTCSeconds() / (60 * 60 * 24)) + (date.getUTCMilliseconds() / (1000 * 60 * 60 * 24));
-    console.log(`${millis} -> ${year} ${month} ${day}`);
     return [year, month, day];
 };
 

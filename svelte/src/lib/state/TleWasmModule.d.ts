@@ -13,6 +13,7 @@ export interface TleWasmModule {
     loadObjs(address: number, length: number): any;
     getPositions(year: number, month: number, day: number): any;
     getPosition(year: number, month: number, day: number, id: string): any;
+    getPeriod(id: string): number;
     _malloc(x: number);
     
 }
