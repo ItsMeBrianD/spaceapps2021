@@ -100,12 +100,14 @@ export class TleStore implements Readable<TleStoreState> {
         if (this.state.loading === true) throw new Error("Wait for Module Initialization before loading TLEs");
 
         const info = this.state.module.getPosition(year, month, day, id);
-        return {
+        const output = {
             id: info.get(0),
             alt: parseFloat(info.get(1)),
             lat: parseFloat(info.get(2)),
             long: parseFloat(info.get(3)),
         };
+        info.delete();
+        return output;
     }
 
     getPeriod(id: string): number {
