@@ -19,6 +19,8 @@ class WWModule {
 
     private currentProjection = "3d";
 
+    private selected;
+
     set projection(v: "2d" | "3d") {
         
         if (v === "2d") {
@@ -79,8 +81,7 @@ class WWModule {
             this.placemarks = {};
         };
 
-        let selected;
-        selectedObject.subscribe(x => { selected = x });
+        selectedObject.subscribe(x => { this.selected = x });
 
         const posSub = s.positions.subscribe(allPositions => {
             allPositions.forEach(pos => {
@@ -115,7 +116,7 @@ class WWModule {
                     this.placemarks[pos.id].position.longitude = pos.long;
                 }
 
-                if (pos.id === selected?.id) {
+                if (pos.id === this.selected?.id) {
                     selectedObject.set(properties);
                 }
             });
@@ -136,43 +137,8 @@ class WWModule {
 
             // If more than one object clicked, top of the array is top object clicked, if its not terrain it is an object
             if (pickList.objects.length && !pickList.objects[0]?.isTerrain) {
-                const properties = pickList.objects[0].userObject.userProperties;
-                this.placemarks[properties.id].label = "Selected";
-                this.placemarks[properties.id].highlighted = true;
-                selectedObject.update(curr => {
-                    if (curr) {
-                        this.placemarks[curr.id].label = undefined;
-                        this.placemarks[curr.id].highlighted = false;
-                    }
-                    return properties;
-                });
-
-
-
-                // Show orbit
-                const rpd = this.store.getPeriod(properties.id); //period is rev/day 
-                const period = (1 / rpd) * 60 * 24; //period in min/rev
-                const timeArray = getTimeArray(currentTimeValue, period, 100);
-                const positions = timeArray.map(time => this.store.getPosition(...millisToYMD(time), properties.id));
-                console.log(positions);
-                const pathPositions = positions.map(pos => new ww.Position(pos.lat, pos.long, this.currentProjection === "3d" ? pos.alt : 0));
-        
-                const path = new ww.Path(pathPositions, null);
-                path.altitudeMode = ww.RELATIVE_TO_GROUND; // The path's altitude stays relative to the terrain's altitude.
-                path.followTerrain = false;
-        
-                const pathAttributes = new ww.ShapeAttributes(null);
-                pathAttributes.outlineColor = new ww.Color(0.850980392, 0.290196078, 0.701960784, 1);
-                pathAttributes.drawVerticals = path.extrude; // Draw verticals only when extruding.
-                path.attributes = pathAttributes;
-                        
-                // Add the path to a layer and the layer to the WorldWindow's layer list.
-                this.orbitLayer = new ww.RenderableLayer();
-                this.orbitLayer.displayName = "Paths";
-                this.orbitLayer.addRenderable(path);
-        
-                this.worldWin.addLayer(this.orbitLayer);
-
+                const id = pickList.objects[0].userObject.userProperties.id;
+                this.drawOrbit(id, currentTimeValue);
             } else {
                 selectedObject.update(curr => {
                     if (!curr) return null;
@@ -193,6 +159,49 @@ class WWModule {
             this.store.getPositions(...millisToYMD(time));
         });
         this.unsubs.push(timeChangedSub);
+    };
+
+    drawOrbit = (id, currentTimeValue) => {
+        console.log(this.placemarks[id]);
+        this.placemarks[id].label = "Selected";
+        this.placemarks[id].highlighted = true;
+        selectedObject.update(curr => {
+            if (curr) {
+                this.placemarks[curr.id].label = undefined;
+                this.placemarks[curr.id].highlighted = false;
+            }
+            return this.placemarks[id].userProperties;
+        });
+
+        // Show orbit
+        const rpd = this.store.getPeriod(id); //period is rev/day 
+        const period = (1 / rpd) * 60 * 24; //period in min/rev
+        const timeArray = getTimeArray(currentTimeValue, period, 100);
+        const positions = timeArray.map(time => this.store.getPosition(...millisToYMD(time), id));
+        console.log(positions);
+        const pathPositions = positions.map(pos => new this.ww.Position(pos.lat, pos.long, this.currentProjection === "3d" ? pos.alt : 0));
+
+        const path = new this.ww.Path(pathPositions, null);
+        path.altitudeMode = this.ww.RELATIVE_TO_GROUND; // The path's altitude stays relative to the terrain's altitude.
+        path.followTerrain = false;
+
+        const pathAttributes = new this.ww.ShapeAttributes(null);
+        pathAttributes.outlineColor = new this.ww.Color(0.850980392, 0.290196078, 0.701960784, 1);
+        pathAttributes.drawVerticals = path.extrude; // Draw verticals only when extruding.
+        path.attributes = pathAttributes;
+                
+        // Add the path to a layer and the layer to the WorldWindow's layer list.
+        this.orbitLayer = new this.ww.RenderableLayer();
+        this.orbitLayer.displayName = "Paths";
+        this.orbitLayer.addRenderable(path);
+
+        this.worldWin.addLayer(this.orbitLayer);
+    };
+
+    onProjectionChange = () => {
+        if (this.selected) {
+            
+        }
     };
 
     destroy = (): void => {
