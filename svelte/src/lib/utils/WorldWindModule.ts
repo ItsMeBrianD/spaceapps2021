@@ -150,7 +150,6 @@ class WWModule {
                 const period = (1 / rpd) * 60 * 24; //period in min/rev
                 const timeArray = getTimeArray(currentTimeValue, period, 100);
                 const positions = timeArray.map(time => this.store.getPosition(...millisToYMD(time), properties.id));
-                console.log(positions);
                 const pathPositions = positions.map(pos => new ww.Position(pos.lat, pos.long, pos.alt));
         
                 const path = new ww.Path(pathPositions, null);
