@@ -72,8 +72,6 @@ export class TleStore implements Readable<TleStoreState> {
         dataHeap.set(tleArray);
 
         this.state.module.loadObjs(dataPtr, tleArray.length);
-
-        console.log("Loaded new values into WASM!");
     }
 
     getPositions(year: number, month: number, day: number): TleOutput[] {
