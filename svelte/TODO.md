@@ -5,3 +5,5 @@
 5. ✅ Figure out what app does with data epoch over 1 year.
 6. ✅ Delete Return Vector once it's copied over into javascript
 7. ✅ Link to GitHub repo
+8. Zero out altitude on 2D view (branch `altitude-on-projection-change`)
+9. Fix weird horizontal line on orbits in 2D view
