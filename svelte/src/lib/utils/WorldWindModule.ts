@@ -134,10 +134,9 @@ class WWModule {
             // If more than one object clicked, top of the array is top object clicked, if its not terrain it is an object
             if (pickList.objects.length && !pickList.objects[0]?.isTerrain) {
                 const properties = pickList.objects[0].userObject.userProperties;
-                this.placemarks[properties.id].label = "Selected";
                 this.placemarks[properties.id].highlighted = true;
                 selectedObject.update(curr => {
-                    if (curr) {
+                    if (curr && curr.id !== properties.id) {
                         this.placemarks[curr.id].label = undefined;
                         this.placemarks[curr.id].highlighted = false;
                     }
