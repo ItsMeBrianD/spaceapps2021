@@ -40,6 +40,12 @@ class WWModule {
         this.ww = ww;
         this.worldWin = new ww.WorldWindow(c);
 
+        // 2D Map???
+        const map = new ww.Globe2D();
+        map.projection = new ww.ProjectionEquirectangular();
+
+        this.worldWin.globe = map;
+
         const layers = [
             // Imagery layers.
             {layer: new ww.BMNGLayer(), enabled: true},
