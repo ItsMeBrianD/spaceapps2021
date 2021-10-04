@@ -50,7 +50,9 @@
                 {#if $selectedObject}
                     <tr>
                         <th>Catalog Number</th>
-                        <td>{$selectedObject ? $selectedObject.id : ""}</td>
+                        <td>
+                            <a href={`https://www.n2yo.com/satellite/?s=${$selectedObject.id}#results`} target="_blank">{$selectedObject ? $selectedObject.id : ""}</a>
+                        </td>
                     </tr>
                 {/if}
                 {#if cat}
@@ -136,5 +138,9 @@
     }
     tbody:not(:first-child) {
         @apply border-t-2 border-secondary-500;
+    }
+
+    a:hover {
+        @apply cursor-pointer underline;
     }
 </style>
