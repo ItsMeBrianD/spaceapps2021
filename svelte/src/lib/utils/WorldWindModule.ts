@@ -20,6 +20,7 @@ class WWModule {
     private currentProjection = "3d";
 
     private selected;
+    private currentTimeValue;
 
     set projection(v: "2d" | "3d") {
         
@@ -31,6 +32,8 @@ class WWModule {
             this.worldWin.globe = this.defaultGlobe;
         }
         this.currentProjection = v;
+
+        this.onProjectionChange();
         this.worldWin.redraw();
     }
 
@@ -45,9 +48,7 @@ class WWModule {
     private map: any;
 
 
-    init = async (c: HTMLCanvasElement, s: TleStore): Promise<void> => {
-        let currentTimeValue;
-        
+    init = async (c: HTMLCanvasElement, s: TleStore): Promise<void> => {        
 
         this.store = s;
         
@@ -138,7 +139,7 @@ class WWModule {
             // If more than one object clicked, top of the array is top object clicked, if its not terrain it is an object
             if (pickList.objects.length && !pickList.objects[0]?.isTerrain) {
                 const id = pickList.objects[0].userObject.userProperties.id;
-                this.drawOrbit(id, currentTimeValue);
+                this.drawOrbit(id);
             } else {
                 selectedObject.update(curr => {
                     if (!curr) return null;
@@ -155,15 +156,13 @@ class WWModule {
         new ww.TapRecognizer(this.worldWin, handleClick);
 
         const timeChangedSub = currentTime.subscribe(time => {
-            currentTimeValue = time;
+            this.currentTimeValue = time;
             this.store.getPositions(...millisToYMD(time));
         });
         this.unsubs.push(timeChangedSub);
     };
 
-    drawOrbit = (id, currentTimeValue) => {
-        console.log(this.placemarks[id]);
-        this.placemarks[id].label = "Selected";
+    drawOrbit = (id) => {
         this.placemarks[id].highlighted = true;
         selectedObject.update(curr => {
             if (curr) {
@@ -176,9 +175,8 @@ class WWModule {
         // Show orbit
         const rpd = this.store.getPeriod(id); //period is rev/day 
         const period = (1 / rpd) * 60 * 24; //period in min/rev
-        const timeArray = getTimeArray(currentTimeValue, period, 100);
+        const timeArray = getTimeArray(this.currentTimeValue, period, 100);
         const positions = timeArray.map(time => this.store.getPosition(...millisToYMD(time), id));
-        console.log(positions);
         const pathPositions = positions.map(pos => new this.ww.Position(pos.lat, pos.long, this.currentProjection === "3d" ? pos.alt : 0));
 
         const path = new this.ww.Path(pathPositions, null);
@@ -200,7 +198,9 @@ class WWModule {
 
     onProjectionChange = () => {
         if (this.selected) {
-            
+            console.log("redrawing orbit on projection change");
+            this.orbitLayer.removeAllRenderables();
+            this.drawOrbit(this.selected.id);
         }
     };
 
