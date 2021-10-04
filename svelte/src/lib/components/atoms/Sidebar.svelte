@@ -15,13 +15,14 @@
     import {millisToYMD} from "$lib/utils/date-time";
     
     const wasm: TleStore = getContext(ContextKeys.WasmStore);
+    let dataLoaded = false;
 
     async function handleSelectDataset(e) {
         selectedObject.set(null);
 
         // This one's for you Zach
         WorldWindModule.yeet();
-
+        dataLoaded = Boolean(e.target.value);
         if (!e.target.value) return;
         
         const newDatasetLocation = e.target.value;
@@ -53,6 +54,7 @@
         <img src="/images/Full_Logo_Light.png" alt="Sprocket Orbital Tracker"/>
         <hr/>
         <pre class="lg:hidden">Visualization is below filters</pre>
+        {#if dataLoaded}<pre>Click or tap an object for details</pre>{/if}
     </header>
 
     <section>
